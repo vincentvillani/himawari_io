@@ -23,7 +23,15 @@ typedef struct BIB
     double   observation_start_time;    // mjd
     double   observation_end_time;      // mjd
     double   file_creation_time;        // mjd
-
+    uint32_t total_header_length;
+    uint32_t total_data_length;
+    uint8_t  quality_flag_1;
+    uint8_t  quality_flag_2;
+    uint8_t  quality_flag_3;
+    uint8_t  quality_flag_4;
+    char     file_format_version[32];
+    char     filename[32];
+    uint8_t  spare[40];
 
     uint8_t* data_p;
     uint64_t data_length;

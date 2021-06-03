@@ -107,8 +107,33 @@ void read_basic_information_block(FILE* fp,
     memcpy(&(bib->file_creation_time),
            buffer + 62,
            8);
-
-
+    memcpy(&(bib->total_header_length),
+           buffer + 70,
+           4);
+    memcpy(&(bib->total_data_length),
+           buffer + 74,
+           4);
+    memcpy(&(bib->quality_flag_1),
+           buffer + 78,
+           1);
+    memcpy(&(bib->quality_flag_2),
+           buffer + 79,
+           1);
+    memcpy(&(bib->quality_flag_3),
+           buffer + 80,
+           1);
+    memcpy(&(bib->quality_flag_4),
+           buffer + 81,
+           1);
+    memcpy(&(bib->file_format_version),
+           buffer + 82,
+           32);
+    memcpy(&(bib->filename),
+           buffer + 114,
+           32);
+    memcpy(&(bib->spare),
+           buffer + 146,
+           40);
 
     if(buffer_allocated)
         free(buffer);
@@ -132,6 +157,14 @@ void print_basic_information_block(BIB* bib)
            "    Observation start time : %f (mjd)\n"
            "    Observation end time   : %f (mjd)\n"
            "    File creation time     : %f (mjd)\n"
+           "    Total header length    : %u\n"
+           "    Total data length      : %u\n"
+           "    Quality Flag 1         : %u\n"
+           "    Quality Flag 2         : %u\n"
+           "    Quality Flag 3         : %u\n"
+           "    Quality Flag 4         : %u\n"
+           "    File format version    : %s\n"
+           "    Filename               : %s\n"
            "\n",
            bib->header_block_number,
            bib->block_length,
@@ -144,8 +177,15 @@ void print_basic_information_block(BIB* bib)
            bib->observation_timeline,
            bib->observation_start_time,
            bib->observation_end_time,
-           bib->file_creation_time
-           );
+           bib->file_creation_time,
+           bib->total_header_length,
+           bib->total_data_length,
+           bib->quality_flag_1,
+           bib->quality_flag_2,
+           bib->quality_flag_3,
+           bib->quality_flag_4,
+           bib->file_format_version,
+           bib->filename);
 
 }
 
