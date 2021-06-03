@@ -14,7 +14,9 @@ int main(int argc, char** argv)
               hsd,
               allocate_data_p);
     print_basic_information_block(hsd->bib);
+    print_data_information_block(hsd->dib);
     
+    // TODO: Free structs
 
     return 0;
 }

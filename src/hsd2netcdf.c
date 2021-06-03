@@ -26,7 +26,9 @@ BIB* allocate_basic_information_block(bool allocate_data_p)
 
 void deallocate_basic_information_block(BIB* bib)
 {
-    // TODO
+    if(bib->data_p)
+        free(bib->data_p);
+    free(bib);
 }
 
 
@@ -191,11 +193,109 @@ void print_basic_information_block(BIB* bib)
 
 
 
+DIB* allocate_data_information_block(bool allocate_data_p)
+{
+    DIB* result    = (DIB*)calloc(1, sizeof(DIB));
+    result->data_p = NULL;
+
+    if(allocate_data_p)
+    {
+        // TODO
+        fprintf(stderr,
+                "%s:%s: Not currently supported\n",
+                __FILE__,
+                (char*)__LINE__);
+        exit(1);
+    }
+
+    return result;
+}
+
+
+
+void deallocate_data_information_block(DIB* dib)
+{
+    if(dib->data_p)
+        free(dib->data_p);
+    free(dib);
+}
+
+
+
+void read_data_information_block(FILE* fp,
+                                 DIB* dib,
+                                 bool fill_data_p,
+                                 uint32_t header_offset)
+{
+    bool     buffer_allocated = false;
+    uint8_t* buffer           = NULL;
+
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Do we need to allocate a buffer?
+    if(fill_data_p)
+    {
+        buffer = dib->data_p;
+    }
+    else
+    {
+        buffer = (uint8_t*)calloc(1, block_length);
+        buffer_allocated = true;
+    }
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    dib->header_block_number = block_number;
+    dib->block_length        = block_length;
+
+    if(buffer_allocated)
+        free(buffer);
+}
+
+
+
+void print_data_information_block(DIB* dib)
+{
+
+    printf("Data Information Block:\n\n"
+           "    Block number           : %u\n"
+           "    Block length (bytes)   : %u\n",
+           dib->header_block_number,
+           dib->block_length
+           );
+
+}
+
+
+
+
+
 HSD* allocate_hsd(bool allocate_data_p)
 {
     HSD* result = (HSD*)calloc(1, sizeof(HSD));
 
     result->bib = allocate_basic_information_block(allocate_data_p);
+    result->dib = allocate_data_information_block(allocate_data_p);
 
     return result;
 }
@@ -219,6 +319,10 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
     read_basic_information_block(fp,
                                  hsd->bib,
                                  fill_data_p);
+    read_data_information_block(fp,
+                                hsd->dib,
+                                fill_data_p,
+                                hsd->bib->block_length);
     
 
     fclose(fp);

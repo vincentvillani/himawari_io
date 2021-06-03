@@ -35,14 +35,28 @@ typedef struct BIB
 
     uint8_t* data_p;
     uint64_t data_length;
-
 }BIB;
 
+
+typedef struct DIB
+{
+    uint8_t  header_block_number; // 2 (fixed value)
+    uint16_t block_length;        // 50 bytes (fixed value)
+    uint16_t bits_per_pixel;      // 16 (fixed value)
+    uint16_t number_of_columns;   // x
+    uint16_t number_of_rows;      // y
+    uint8_t  compression_flag;    // 0 = no compression, 1 = gzip, 2 = bzip2
+    uint8_t  spare[40];
+
+    uint8_t* data_p;
+    uint64_t data_length;
+}DIB;
 
 
 typedef struct HSD
 {
     BIB* bib;
+    DIB* dib;
 
 }HSD;
 
@@ -52,10 +66,13 @@ void deallocate_basic_information_block(BIB* bib);
 void read_basic_information_block(FILE* fp, BIB* bib, bool fill_data_p);
 void print_basic_information_block(BIB* bib);
 
+DIB* allocate_data_information_block(bool allocate_data_p);
+void deallocate_data_information_block(DIB* dib);
+void read_data_information_block(FILE* fp, DIB* dib, bool fill_data_p, uint32_t header_offset);
+void print_data_information_block(DIB* dib);
+
 HSD* allocate_hsd(bool allocate_data_p);
 
-
 void read_file(const char* filepath, HSD* hsd, bool fill_data_p);
-
 
 #endif
