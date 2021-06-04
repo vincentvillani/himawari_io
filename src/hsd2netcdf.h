@@ -7,6 +7,8 @@
 #include <stdbool.h>
 
 
+
+// Basic information block
 typedef struct BIB
 {
     uint8_t  header_block_number;       // 1 (fixed value)
@@ -38,6 +40,8 @@ typedef struct BIB
 }BIB;
 
 
+
+// Data information block
 typedef struct DIB
 {
     uint8_t  header_block_number; // 2 (fixed value)
@@ -53,23 +57,98 @@ typedef struct DIB
 }DIB;
 
 
+
+// Projection information block
+typedef struct PIB
+{
+    uint8_t  header_block_number; // 3 (fixed value)
+    uint16_t block_length;        // 127 bytes (fixed value)
+    double   sub_lon;             // 140.7 degrees
+    uint32_t cfac;                // Column scaling factor
+    uint32_t lfac;                // Line scaling factor
+    float    coff;                // Column offset
+    float    loff;                // Line offset
+    double   Rs;                  // Distance from earth's center to virtual satellite (Rs)
+                                  // 42164 km (fixed value)
+    double   Req;                 // Earth's equatorial radius (Req)
+                                  // 6378.1370 km (fixed value)
+    double   Rpol;                // Earth's polar radis (Rpol)
+                                  // 6356.7523 km (fixed value)
+    double   R1;                  // (Req^2 - Rpol^2) / Req^2
+                                  // 0.00669438444 (fixed value)
+    double   R2;                  // Rpol^2 / Req^2
+                                  // 0.993305616 (fixed value)
+    double   R3;                  // Req^2 / Rpol^2
+                                  // 1.006739501 (fixed value)
+    double   Sd_coefficient;      // Sd(Rs^2 - Req^2)
+                                  // 1737122264 (fixed value)
+    uint16_t resampling_types;    // Resampling types
+    uint16_t resampling_size;     // Resampling size
+    uint8_t  spare[40];
+
+    uint8_t* data_p;
+    uint64_t data_length;
+}PIB;
+
+
+
+// Navigation information block
+typedef struct NIB
+{
+    uint8_t  header_block_number;         // 4 (fixed value)
+    uint16_t block_length;                // 139 bytes (fixed value)
+    double   navigation_information_time; // mjd
+    double   ssp_longitude;               // sub-satellite point longitude (degrees)
+    double   ssp_latitude;                // sub-satellite point latitude (degrees)
+    double   earth_center_to_satellite;   // Distance from earth's centre to the satellite (km)
+    double   nadir_longitude;             // Degrees
+    double   nadir_latitude;              // Degrees
+    double   sun_position_x;              // km (x, y, z) (J2000 inertial coordinate)
+    double   sun_position_y;              
+    double   sun_position_z;              
+    double   moon_position_x;             // km (x, y, z) (J2000 inertial coordinate)
+    double   moon_position_y;             
+    double   moon_position_z;             
+    uint8_t  spare[40];
+
+    uint8_t* data_p;
+    uint64_t data_length;
+}NIB;
+
+
+// A whole HSD file
 typedef struct HSD
 {
     BIB* bib;
     DIB* dib;
-
+    PIB* pib;
+    NIB* nib;
 }HSD;
 
 
 BIB* allocate_basic_information_block(bool allocate_data_p);
 void deallocate_basic_information_block(BIB* bib);
-void read_basic_information_block(FILE* fp, BIB* bib, bool fill_data_p);
+void read_basic_information_block(FILE* fp, BIB* bib, bool fill_data_p, uint32_t header_offset);
 void print_basic_information_block(BIB* bib);
 
 DIB* allocate_data_information_block(bool allocate_data_p);
 void deallocate_data_information_block(DIB* dib);
 void read_data_information_block(FILE* fp, DIB* dib, bool fill_data_p, uint32_t header_offset);
 void print_data_information_block(DIB* dib);
+
+
+PIB* allocate_projection_information_block(bool allocate_data_p);
+void deallocate_projection_information_block(PIB* pib);
+void read_projection_information_block(FILE* fp, PIB* pib, bool fill_data_p, uint32_t header_offset);
+void print_projection_information_block(PIB* pib);
+
+
+NIB* allocate_navigation_information_block(bool allocate_data_p);
+void deallocate_navigation_information_block(NIB* nib);
+void read_navigation_information_block(FILE* fp, NIB* nib, bool fill_data_p, uint32_t header_offset);
+void print_navigation_information_block(NIB* nib);
+
+
 
 HSD* allocate_hsd(bool allocate_data_p);
 
