@@ -430,6 +430,8 @@ void read_projection_information_block(FILE* fp, PIB* pib, bool fill_data_p, uin
            buffer + 87,
            40);
 
+    if(buffer_allocated)
+        free(buffer);
 }
 
 
@@ -588,6 +590,8 @@ void read_navigation_information_block(FILE* fp, NIB* nib, bool fill_data_p, uin
            buffer + 99,
            40);
 
+    if(buffer_allocated)
+        free(buffer);
 
 }
 
