@@ -116,6 +116,23 @@ typedef struct NIB
 }NIB;
 
 
+
+// Calibration Information Block
+typedef struct CIB
+{
+    uint8_t  header_block_number;     // 5 (fixed value)
+    uint16_t block_length;            // 147 bytes (fixed value)
+    uint16_t band_number;             // [1-16]
+    double   central_wave_length;     // um (fixed for each band)
+    uint16_t bits_per_pixel;          // 11, 12 or 14 (band dependent)
+    uint16_t error_pixel_value;       // 65535 (fixed value)
+    uint16_t outside_scan_pixel_value; // 65534 (fixed value)
+
+    uint8_t* data_p;
+    uint64_t data_length;
+}CIB;
+
+
 // A whole HSD file
 typedef struct HSD
 {
@@ -123,6 +140,7 @@ typedef struct HSD
     DIB* dib;
     PIB* pib;
     NIB* nib;
+    CIB* cib;
 }HSD;
 
 
@@ -136,17 +154,20 @@ void deallocate_data_information_block(DIB* dib);
 void read_data_information_block(FILE* fp, DIB* dib, bool fill_data_p, uint32_t header_offset);
 void print_data_information_block(DIB* dib);
 
-
 PIB* allocate_projection_information_block(bool allocate_data_p);
 void deallocate_projection_information_block(PIB* pib);
 void read_projection_information_block(FILE* fp, PIB* pib, bool fill_data_p, uint32_t header_offset);
 void print_projection_information_block(PIB* pib);
 
-
 NIB* allocate_navigation_information_block(bool allocate_data_p);
 void deallocate_navigation_information_block(NIB* nib);
 void read_navigation_information_block(FILE* fp, NIB* nib, bool fill_data_p, uint32_t header_offset);
 void print_navigation_information_block(NIB* nib);
+
+CIB* allocate_calibration_information_block(bool allocate_data_p);
+void deallocate_calibration_information_block(CIB* cib);
+void read_calibration_information_block(FILE* fp, CIB* cib, bool fill_data_p, uint32_t header_offset);
+void print_calibration_information_block(CIB* cib);
 
 
 

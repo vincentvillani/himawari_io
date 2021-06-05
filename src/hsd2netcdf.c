@@ -629,6 +629,121 @@ void print_navigation_information_block(NIB* nib)
 
 
 
+CIB* allocate_calibration_information_block(bool allocate_data_p)
+{
+    CIB* result    = (CIB*)calloc(1, sizeof(CIB));
+    result->data_p = NULL;
+    if(allocate_data_p)
+    {
+        // TODO
+        fprintf(stderr,
+                "%s:%s: Not currently supported\n",
+                __FILE__,
+                (char*)__LINE__);
+        exit(1);
+    }
+
+    return result;
+}
+
+
+
+void deallocate_calibration_information_block(CIB* cib)
+{
+    if(cib->data_p)
+        free(cib->data_p);
+    free(cib);
+}
+
+
+
+void read_calibration_information_block(FILE* fp, CIB* cib, bool fill_data_p, uint32_t header_offset)
+{
+    bool     buffer_allocated = false;
+    uint8_t* buffer           = NULL;
+
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Do we need to allocate a buffer?
+    if(fill_data_p)
+    {
+        buffer = cib->data_p;
+    }
+    else
+    {
+        buffer = (uint8_t*)calloc(1, block_length);
+        buffer_allocated = true;
+    }
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    cib->header_block_number = block_number;
+    cib->block_length        = block_length;
+    memcpy(&(cib->band_number),
+           buffer + 3,
+           2);
+    memcpy(&(cib->central_wave_length),
+           buffer + 5,
+           8);
+    memcpy(&(cib->bits_per_pixel),
+           buffer + 13,
+           2);
+    memcpy(&(cib->error_pixel_value),
+           buffer + 15,
+           2);
+    memcpy(&(cib->outside_scan_pixel_value),
+           buffer + 17,
+           2);
+    
+    if(buffer_allocated)
+        free(buffer);
+}
+
+
+
+void print_calibration_information_block(CIB* cib)
+{
+    printf("Calibration Information Block:\n\n"
+           "    Block number             : %u\n"
+           "    Block length (bytes)     : %u\n"
+           "    band number              : %u\n"
+           "    Central wave length      : %f\n"
+           "    Bits per pixel           : %u\n"
+           "    Error pixel value        : %u\n"
+           "    Outside scan pixel value : %u\n"
+           "\n",
+           cib->header_block_number,
+           cib->block_length,
+           cib->band_number,
+           cib->central_wave_length,
+           cib->bits_per_pixel,
+           cib->error_pixel_value,
+           cib->outside_scan_pixel_value
+           );
+
+}
+
+
 
 
 HSD* allocate_hsd(bool allocate_data_p)
@@ -639,6 +754,7 @@ HSD* allocate_hsd(bool allocate_data_p)
     result->dib = allocate_data_information_block(allocate_data_p);
     result->pib = allocate_projection_information_block(allocate_data_p);
     result->nib = allocate_navigation_information_block(allocate_data_p);
+    result->cib = allocate_calibration_information_block(allocate_data_p);
 
     return result;
 }
@@ -683,6 +799,12 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
                                       fill_data_p,
                                       block_offset);
     block_offset += hsd->nib->block_length;
+    read_calibration_information_block(fp,
+                                       hsd->cib,
+                                       fill_data_p,
+                                       block_offset);
+    block_offset += hsd->cib->block_length;
+
 
     fclose(fp);
 }

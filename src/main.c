@@ -17,8 +17,11 @@ int main(int argc, char** argv)
     print_data_information_block(hsd->dib);
     print_projection_information_block(hsd->pib);
     print_navigation_information_block(hsd->nib);
+    print_calibration_information_block(hsd->cib);
 
     // TODO: Free structs
 
     return 0;
 }
+
+
