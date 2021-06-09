@@ -27,6 +27,7 @@ int main(int argc, char** argv)
     print_projection_information_block(hsd->pib);
     print_navigation_information_block(hsd->nib);
     print_calibration_information_block(hsd->cib);
+    print_inter_calibration_information_block(hsd->iib);
 
     // TODO: Free structs
 

@@ -847,6 +847,157 @@ void print_calibration_information_block(CIB* cib)
 
 
 
+IIB* allocate_inter_calibration_information_block(bool allocate_data_p)
+{
+    IIB* result    = (IIB*)calloc(1, sizeof(IIB));
+    result->data_p = NULL;
+    if(allocate_data_p)
+    {
+        // TODO
+        fprintf(stderr,
+                "%s:%s: Not currently supported\n",
+                __FILE__,
+                (char*)__LINE__);
+        exit(1);
+    }
+
+    return result;
+}
+
+
+
+void deallocate_inter_calibration_information_block(IIB* iib)
+{
+    if(iib->data_p)
+        free(iib->data_p);
+    free(iib);
+}
+
+
+
+void read_inter_calibration_information_block(FILE* fp, IIB* iib, bool fill_data_p, uint32_t header_offset)
+{
+    bool     buffer_allocated = false;
+    uint8_t* buffer           = NULL;
+
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Do we need to allocate a buffer?
+    if(fill_data_p)
+    {
+        buffer = iib->data_p;
+    }
+    else
+    {
+        buffer = (uint8_t*)calloc(1, block_length);
+        buffer_allocated = true;
+    }
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    iib->header_block_number = block_number;
+    iib->block_length        = block_length;
+    
+    memcpy(&(iib->gsics_calibration_intercept),
+           buffer + 3,
+           8);
+    memcpy(&(iib->gsics_calibration_slope),
+           buffer + 11,
+           8);
+    memcpy(&(iib->gsics_calibration_quadratic),
+           buffer + 19,
+           8);
+    memcpy(&(iib->radiance_bias),
+           buffer + 27,
+           8);
+    memcpy(&(iib->radiance_bias_uncertainty),
+           buffer + 35,
+           8);
+    memcpy(&(iib->radiance),
+           buffer + 43,
+           8);
+    memcpy(&(iib->gsics_calibration_validity_start),
+           buffer + 51,
+           8);
+    memcpy(&(iib->gsics_calibration_validity_end),
+           buffer + 59,
+           8);
+    memcpy(&(iib->gsics_radiance_validity_upper_limit),
+           buffer + 67,
+           4);
+    memcpy(&(iib->gsics_radiance_validity_lower_limit),
+           buffer + 71,
+           4);
+    memcpy(&(iib->gsics_correction_filename),
+           buffer + 75,
+           128);
+    memcpy(&(iib->spare),
+           buffer + 203,
+           56);
+
+
+
+
+
+
+    if(buffer_allocated)
+        free(buffer);
+}
+
+
+
+void print_inter_calibration_information_block(IIB* iib)
+{
+    printf("Inter-calibration Information Block:\n\n"
+           "    Block number                                : %u\n"
+           "    Block length (bytes)                        : %u\n"
+           "    GSICS calibration intercept                 : %f\n"
+           "    GSICS calibration slope                     : %f\n"
+           "    GSICS calibration quadratic                 : %f\n"
+           "    Radiance bias (standard scene)              : %f\n"
+           "    Radiance bias uncertainty (standard scene)  : %f\n"
+           "    Radiance (standard scene)                   : %f\n"
+           "    GSICS calibration validity start time (mjd) : %f\n"
+           "    GSICS calibration validity end time   (mjd) : %f\n"
+           "    GSICS calibration validity upper limit      : %f\n"
+           "    GSICS calibration validity lower limit      : %f\n"
+           "    GSICS calibration correction filename       : %s\n",
+           iib->header_block_number,
+           iib->block_length,
+           iib->gsics_calibration_intercept,
+           iib->gsics_calibration_slope,
+           iib->gsics_calibration_quadratic,
+           iib->radiance_bias,
+           iib->radiance_bias_uncertainty,
+           iib->radiance,
+           iib->gsics_calibration_validity_start,
+           iib->gsics_calibration_validity_end,
+           iib->gsics_radiance_validity_upper_limit,
+           iib->gsics_radiance_validity_lower_limit,
+           iib->gsics_correction_filename);
+}
+
+
 
 HSD* allocate_hsd(bool allocate_data_p)
 {
@@ -857,6 +1008,7 @@ HSD* allocate_hsd(bool allocate_data_p)
     result->pib = allocate_projection_information_block(allocate_data_p);
     result->nib = allocate_navigation_information_block(allocate_data_p);
     result->cib = allocate_calibration_information_block(allocate_data_p);
+    result->iib = allocate_inter_calibration_information_block(allocate_data_p);
 
     return result;
 }
@@ -907,6 +1059,11 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
                                        block_offset);
     block_offset += hsd->cib->block_length;
 
+    read_inter_calibration_information_block(fp,
+                                             hsd->iib,
+                                             fill_data_p,
+                                             block_offset);
+    block_offset += hsd->iib->block_length;
 
     fclose(fp);
 }

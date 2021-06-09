@@ -148,6 +148,30 @@ typedef struct CIB
 }CIB;
 
 
+
+// Inter-calibration Information Block
+typedef struct IIB
+{
+    uint8_t  header_block_number;      // 6 (fixed value)
+    uint16_t block_length;             // 259 bytes (fixed value)
+    double   gsics_calibration_intercept;
+    double   gsics_calibration_slope;
+    double   gsics_calibration_quadratic;
+    double   radiance_bias;                    // For standard scene
+    double   radiance_bias_uncertainty;        // For standard scene
+    double   radiance;                         // For standard scene
+    double   gsics_calibration_validity_start; // MJD
+    double   gsics_calibration_validity_end;   // MJD
+    float    gsics_radiance_validity_upper_limit;
+    float    gsics_radiance_validity_lower_limit;
+    char     gsics_correction_filename[128];
+    uint8_t  spare[56];
+
+    uint8_t* data_p;
+    uint64_t data_length;
+}IIB;
+
+
 // A whole HSD file
 typedef struct HSD
 {
@@ -156,6 +180,7 @@ typedef struct HSD
     PIB* pib;
     NIB* nib;
     CIB* cib;
+    IIB* iib;
 }HSD;
 
 
@@ -184,6 +209,10 @@ void deallocate_calibration_information_block(CIB* cib);
 void read_calibration_information_block(FILE* fp, CIB* cib, bool fill_data_p, uint32_t header_offset);
 void print_calibration_information_block(CIB* cib);
 
+IIB* allocate_inter_calibration_information_block(bool allocate_data_p);
+void deallocate_inter_calibration_information_block(IIB* iib);
+void read_inter_calibration_information_block(FILE* fp, IIB* iib, bool fill_data_p, uint32_t header_offset);
+void print_inter_calibration_information_block(IIB* iib);
 
 
 HSD* allocate_hsd(bool allocate_data_p);
