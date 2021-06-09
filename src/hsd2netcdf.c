@@ -714,7 +714,58 @@ void read_calibration_information_block(FILE* fp, CIB* cib, bool fill_data_p, ui
     memcpy(&(cib->outside_scan_pixel_value),
            buffer + 17,
            2);
-    
+    memcpy(&(cib->count_radiance_slope),
+           buffer + 19,
+           8);
+    memcpy(&(cib->count_radiance_intercept),
+           buffer + 27,
+           8);
+
+    // If this is an IR band
+    if(cib->band_number >=7 )
+    {
+        memcpy(&(cib->ir_rad_to_bt_c0),
+               buffer + 35,
+               8);
+        memcpy(&(cib->ir_rad_to_bt_c1),
+               buffer + 43,
+               8);
+        memcpy(&(cib->ir_rad_to_bt_c2),
+               buffer + 51,
+               8);
+        memcpy(&(cib->ir_bt_to_rad_c0),
+               buffer + 59,
+               8);
+        memcpy(&(cib->ir_bt_to_rad_c1),
+               buffer + 67,
+               8);
+        memcpy(&(cib->ir_bt_to_rad_c2),
+               buffer + 75,
+               8);
+        memcpy(&(cib->spare),
+               buffer + 83,
+               40);
+    }
+    // Else this is a VIS/NIR band
+    else
+    {
+        memcpy(&(cib->vis_nir_c_prime),
+               buffer + 35,
+               8);
+        memcpy(&(cib->vis_nir_calib_update_time),
+               buffer + 43,
+               8);
+        memcpy(&(cib->vis_nir_count_radiance_slope),
+               buffer + 51,
+               8);
+        memcpy(&(cib->vis_nir_count_radiance_intercept),
+               buffer + 59,
+               8);
+        memcpy(&(cib->spare),
+               buffer + 67,
+               80);
+    }
+
     if(buffer_allocated)
         free(buffer);
 }
@@ -723,23 +774,74 @@ void read_calibration_information_block(FILE* fp, CIB* cib, bool fill_data_p, ui
 
 void print_calibration_information_block(CIB* cib)
 {
-    printf("Calibration Information Block:\n\n"
-           "    Block number             : %u\n"
-           "    Block length (bytes)     : %u\n"
-           "    band number              : %u\n"
-           "    Central wave length      : %f\n"
-           "    Bits per pixel           : %u\n"
-           "    Error pixel value        : %u\n"
-           "    Outside scan pixel value : %u\n"
-           "\n",
-           cib->header_block_number,
-           cib->block_length,
-           cib->band_number,
-           cib->central_wave_length,
-           cib->bits_per_pixel,
-           cib->error_pixel_value,
-           cib->outside_scan_pixel_value
-           );
+    if(cib->band_number >= 7)
+    {
+        printf("Calibration Information Block:\n\n"
+               "    Block number                : %u\n"
+               "    Block length (bytes)        : %u\n"
+               "    band number                 : %u\n"
+               "    Central wave length         : %f\n"
+               "    Bits per pixel              : %u\n"
+               "    Error pixel value           : %u\n"
+               "    Outside scan pixel value    : %u\n"
+               "    Count to radiance slope     : %f\n"
+               "    Count to radiance intercept : %f\n"
+               "    IR radiance to BT c0        : %f\n"
+               "    IR radiance to BT c1        : %f\n"
+               "    IR radiance to BT c2        : %f\n"
+               "    IR BT to radiance c0        : %f\n"
+               "    IR BT to radiance c1        : %f\n"
+               "    IR BT to radiance c2        : %f\n"
+               "\n",
+               cib->header_block_number,
+               cib->block_length,
+               cib->band_number,
+               cib->central_wave_length,
+               cib->bits_per_pixel,
+               cib->error_pixel_value,
+               cib->outside_scan_pixel_value,
+               cib->count_radiance_slope,
+               cib->count_radiance_intercept,
+               cib->ir_rad_to_bt_c0,
+               cib->ir_rad_to_bt_c1,
+               cib->ir_rad_to_bt_c2,
+               cib->ir_bt_to_rad_c0,
+               cib->ir_bt_to_rad_c1,
+               cib->ir_bt_to_rad_c2);
+    }
+    else
+    {
+        printf("Calibration Information Block:\n\n"
+               "    Block number                               : %u\n"
+               "    Block length (bytes)                       : %u\n"
+               "    band number                                : %u\n"
+               "    Central wave length                        : %f\n"
+               "    Bits per pixel                             : %u\n"
+               "    Error pixel value                          : %u\n"
+               "    Outside scan pixel value                   : %u\n"
+               "    Count to radiance slope                    : %f\n"
+               "    Count to radiance intercept                : %f\n"
+               "    VIS/IR c'                                  : %f\n"
+               "    VIS/IR calibration update time (mjd)       : %f\n"
+               "    VIS/IR updated count to radiance slope     : %f\n"
+               "    VIS/IR updated count to radiance intercept : %f\n"
+               "\n",
+               cib->header_block_number,
+               cib->block_length,
+               cib->band_number,
+               cib->central_wave_length,
+               cib->bits_per_pixel,
+               cib->error_pixel_value,
+               cib->outside_scan_pixel_value,
+               cib->count_radiance_slope,
+               cib->count_radiance_intercept,
+               cib->vis_nir_c_prime,
+               cib->vis_nir_calib_update_time,
+               cib->vis_nir_count_radiance_slope,
+               cib->vis_nir_count_radiance_intercept);
+
+    }
+
 
 }
 

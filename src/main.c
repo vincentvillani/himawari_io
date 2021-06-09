@@ -5,12 +5,21 @@
 #include "hsd2netcdf.h"
 
 
+// TODO:
+// Test with each HSD version, both VIS/NIR and IR band
+// Read in HSD, then write out that HSD again. Should be byte to byte identical
 int main(int argc, char** argv)
 {
     bool allocate_data_p = false;
 
     HSD* hsd = allocate_hsd(allocate_data_p);
+
+    /*
     read_file("../test_data/HS_H08_20170623_0250_B01_FLDK_R10_S0110.DAT",
+              hsd,
+              allocate_data_p);
+    */
+    read_file("../test_data/HS_H08_20210603_0300_B13_FLDK_R20_S0110.DAT",
               hsd,
               allocate_data_p);
     print_basic_information_block(hsd->bib);
