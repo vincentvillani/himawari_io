@@ -28,6 +28,8 @@ int main(int argc, char** argv)
     print_navigation_information_block(hsd->nib);
     print_calibration_information_block(hsd->cib);
     print_inter_calibration_information_block(hsd->iib);
+    print_segment_information_block(hsd->sib);
+    print_navigation_correction_information_block(hsd->ncib);
 
     // TODO: Free structs
 

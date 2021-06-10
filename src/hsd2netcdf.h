@@ -172,15 +172,62 @@ typedef struct IIB
 }IIB;
 
 
+
+
+typedef struct SIB
+{
+    uint8_t  header_block_number;       // 7 (fixed value)
+    uint16_t block_length;              // 47 bytes (fixed value)
+    uint8_t  total_segments;            // Total number of segments for this band/obs type
+    uint8_t  segment_number;            // Segment number out of total segments
+    uint16_t segment_first_line_number; // First line number of sequence
+    uint8_t  spare[40];
+
+    uint8_t* data_p;
+    uint64_t data_length;
+}SIB;
+
+
+// Navigation correction information block
+typedef struct NCIB
+{
+    uint8_t  header_block_number;       // 8 (fixed value)
+    uint16_t block_length;              // bytes
+    float    center_column_of_rotation; 
+    float    center_line_of_rotation;
+    double   rotational_correction;     // urad
+
+    uint16_t  number_of_corrections;      
+    uint16_t* line_number_after_rotation;
+    float*    shift_for_column_direction;
+    float*    shift_for_line_direction;
+    uint8_t   spare[40];
+
+    uint8_t* data_p;
+    uint64_t data_length;
+
+}NCIB;
+
+/*
+// Observation time information block
+typedef struct OIB
+{
+    
+}OIB;
+*/
+
+
 // A whole HSD file
 typedef struct HSD
 {
-    BIB* bib;
-    DIB* dib;
-    PIB* pib;
-    NIB* nib;
-    CIB* cib;
-    IIB* iib;
+    BIB*  bib;
+    DIB*  dib;
+    PIB*  pib;
+    NIB*  nib;
+    CIB*  cib;
+    IIB*  iib;
+    SIB*  sib;
+    NCIB* ncib;
 }HSD;
 
 
@@ -213,6 +260,17 @@ IIB* allocate_inter_calibration_information_block(bool allocate_data_p);
 void deallocate_inter_calibration_information_block(IIB* iib);
 void read_inter_calibration_information_block(FILE* fp, IIB* iib, bool fill_data_p, uint32_t header_offset);
 void print_inter_calibration_information_block(IIB* iib);
+
+SIB* allocate_segment_information_block(bool allocate_data_p);
+void deallocate_segment_information_block(SIB* sib);
+void read_segment_information_block(FILE* fp, SIB* sib, bool fill_data_p, uint32_t header_offset);
+void print_segment_information_block(SIB* sib);
+
+NCIB* allocate_navigation_correction_information_block(bool allocate_data_p);
+void deallocate_navigation_correction_information_block(NCIB* ncib);
+void read_navigation_correction_information_block(FILE* fp, NCIB* ncib, bool fill_data_p, uint32_t header_offset);
+void print_navigation_correction_information_block(NCIB* ncib);
+
 
 
 HSD* allocate_hsd(bool allocate_data_p);

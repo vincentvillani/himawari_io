@@ -839,7 +839,6 @@ void print_calibration_information_block(CIB* cib)
                cib->vis_nir_calib_update_time,
                cib->vis_nir_count_radiance_slope,
                cib->vis_nir_count_radiance_intercept);
-
     }
 
 
@@ -955,11 +954,6 @@ void read_inter_calibration_information_block(FILE* fp, IIB* iib, bool fill_data
            buffer + 203,
            56);
 
-
-
-
-
-
     if(buffer_allocated)
         free(buffer);
 }
@@ -981,7 +975,8 @@ void print_inter_calibration_information_block(IIB* iib)
            "    GSICS calibration validity end time   (mjd) : %f\n"
            "    GSICS calibration validity upper limit      : %f\n"
            "    GSICS calibration validity lower limit      : %f\n"
-           "    GSICS calibration correction filename       : %s\n",
+           "    GSICS calibration correction filename       : %s\n"
+           "\n",
            iib->header_block_number,
            iib->block_length,
            iib->gsics_calibration_intercept,
@@ -999,16 +994,313 @@ void print_inter_calibration_information_block(IIB* iib)
 
 
 
+SIB* allocate_segment_information_block(bool allocate_data_p)
+{
+    SIB* result    = (SIB*)calloc(1, sizeof(SIB));
+    result->data_p = NULL;
+    if(allocate_data_p)
+    {
+        // TODO
+        fprintf(stderr,
+                "%s:%s: Not currently supported\n",
+                __FILE__,
+                (char*)__LINE__);
+        exit(1);
+    }
+
+    return result;
+}
+
+
+
+void deallocate_segment_information_block(SIB* sib)
+{
+    if(sib->data_p)
+        free(sib->data_p);
+    free(sib);
+}
+
+
+
+void read_segment_information_block(FILE* fp, SIB* sib, bool fill_data_p, uint32_t header_offset)
+{
+    bool     buffer_allocated = false;
+    uint8_t* buffer           = NULL;
+
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Do we need to allocate a buffer?
+    if(fill_data_p)
+    {
+        buffer = sib->data_p;
+    }
+    else
+    {
+        buffer = (uint8_t*)calloc(1, block_length);
+        buffer_allocated = true;
+    }
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    sib->header_block_number = block_number;
+    sib->block_length        = block_length;
+    memcpy(&(sib->total_segments),
+           buffer + 3,
+           1);
+    memcpy(&(sib->segment_number),
+           buffer + 4,
+           1);
+    memcpy(&(sib->segment_first_line_number),
+           buffer + 5,
+           2);
+    memcpy(&(sib->spare),
+           buffer + 7,
+           40);
+
+    if(buffer_allocated)
+        free(buffer);
+
+}
+
+
+
+void print_segment_information_block(SIB* sib)
+{
+
+    printf("Segment Information Block:\n\n"
+           "    Block number                 : %u\n"
+           "    Block length (bytes)         : %u\n"
+           "    Total segments               : %u\n"
+           "    Segment number               : %u\n"
+           "    First line number of segment : %u\n"
+           "\n",
+           sib->header_block_number,
+           sib->block_length,
+           sib->total_segments,
+           sib->segment_number,
+           sib->segment_first_line_number);
+}
+
+
+
+NCIB* allocate_navigation_correction_information_block(bool allocate_data_p)
+{
+    NCIB* result    = (NCIB*)calloc(1, sizeof(NCIB));
+    result->data_p = NULL;
+    if(allocate_data_p)
+    {
+        // TODO
+        fprintf(stderr,
+                "%s:%s: Not currently supported\n",
+                __FILE__,
+                (char*)__LINE__);
+        exit(1);
+    }
+
+    return result;
+}
+
+
+
+void deallocate_navigation_correction_information_block(NCIB* ncib)
+{
+    if(ncib->line_number_after_rotation)
+        free(ncib->line_number_after_rotation);
+
+    if(ncib->shift_for_column_direction)
+        free(ncib->shift_for_column_direction);
+
+    if(ncib->shift_for_line_direction)
+        free(ncib->shift_for_line_direction);
+
+    if(ncib->data_p)
+        free(ncib->data_p);
+
+    free(ncib);
+}
+
+
+
+void read_navigation_correction_information_block(FILE* fp, NCIB* ncib, bool fill_data_p, uint32_t header_offset)
+{
+    bool     buffer_allocated = false;
+    uint8_t* buffer           = NULL;
+
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Do we need to allocate a buffer?
+    if(fill_data_p)
+    {
+        buffer = ncib->data_p;
+    }
+    else
+    {
+        buffer = (uint8_t*)calloc(1, block_length);
+        buffer_allocated = true;
+    }
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    ncib->header_block_number = block_number;
+    ncib->block_length        = block_length;
+    memcpy(&(ncib->center_column_of_rotation),
+           buffer + 3,
+           4);
+    memcpy(&(ncib->center_line_of_rotation),
+           buffer + 7,
+           4);
+    memcpy(&(ncib->rotational_correction),
+           buffer + 11,
+           8);
+
+    memcpy(&(ncib->number_of_corrections),
+           buffer + 19,
+           2);
+
+    uint32_t buffer_offset = 21;
+
+    // Allocate the required memory
+    if(ncib->number_of_corrections > 0)
+    {
+        ncib->line_number_after_rotation = 
+            (uint16_t*)malloc(sizeof(uint16_t) * ncib->number_of_corrections);
+        ncib->shift_for_column_direction = 
+            (float*)malloc(sizeof(float) * ncib->number_of_corrections);
+        ncib->shift_for_line_direction = 
+            (float*)malloc(sizeof(float) * ncib->number_of_corrections);
+        
+        for(uint32_t i = 0; i < ncib->number_of_corrections; ++i)
+        {
+            memcpy(ncib->line_number_after_rotation + i,
+                   buffer + buffer_offset,
+                   2);
+            buffer_offset += 2;
+
+            memcpy(ncib->shift_for_column_direction + i,
+                   buffer + buffer_offset,
+                   4);
+            buffer_offset += 4;
+
+            memcpy(ncib->shift_for_line_direction + i,
+                   buffer + buffer_offset,
+                   4);
+            buffer_offset += 4;
+        }
+    }
+
+    memcpy(&(ncib->spare),
+          buffer + buffer_offset,
+          40);
+
+    if(buffer_allocated)
+        free(buffer);
+}
+
+
+
+void print_navigation_correction_information_block(NCIB* ncib)
+{
+        /*
+        ncib->line_number_after_rotation = 
+            (uint16_t*)malloc(sizeof(uint16_t) * ncib->number_of_corrections);
+        ncib->shift_for_column_direction = 
+            (float*)malloc(sizeof(float) * ncib->number_of_correction);
+        ncib->shift_for_line_direction = 
+            (float*)malloc(sizeof(float) * ncib->number_of_correction);
+        */
+    const uint32_t buffer_length = 256 * ncib->number_of_corrections;
+    char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
+    uint32_t       written_chars = 0;
+
+    for(uint32_t i = 0; i < ncib->number_of_corrections; ++i)
+    {
+        written_chars += snprintf(buffer + written_chars,
+                                  buffer_length - written_chars,
+                                  "      Correction %u:\n"
+                                  "        Line number after rotation : %u\n"
+                                  "        Shift for column direction : %f\n"
+                                  "        Shift for line direction   : %f\n",
+                                  i + 1,
+                                  ncib->line_number_after_rotation[i],
+                                  ncib->shift_for_column_direction[i],
+                                  ncib->shift_for_line_direction[i]);
+    }
+
+    printf("Navigation Correction Information Block:\n\n"
+           "    Block number                 : %u\n"
+           "    Block length (bytes)         : %u\n"
+           "    Center column of rotation    : %f\n"
+           "    Center line of rotation      : %f\n"
+           "    Rotational correction (urad) : %f\n"
+           "    Number of corrections        : %u\n"
+           "%s\n"
+           "\n",
+           ncib->header_block_number,
+           ncib->block_length,
+           ncib->center_column_of_rotation,
+           ncib->center_line_of_rotation,
+           ncib->rotational_correction,
+           ncib->number_of_corrections,
+           buffer);
+
+    free(buffer);
+}
+
+
+
+
 HSD* allocate_hsd(bool allocate_data_p)
 {
     HSD* result = (HSD*)calloc(1, sizeof(HSD));
 
-    result->bib = allocate_basic_information_block(allocate_data_p);
-    result->dib = allocate_data_information_block(allocate_data_p);
-    result->pib = allocate_projection_information_block(allocate_data_p);
-    result->nib = allocate_navigation_information_block(allocate_data_p);
-    result->cib = allocate_calibration_information_block(allocate_data_p);
-    result->iib = allocate_inter_calibration_information_block(allocate_data_p);
+    result->bib  = allocate_basic_information_block(allocate_data_p);
+    result->dib  = allocate_data_information_block(allocate_data_p);
+    result->pib  = allocate_projection_information_block(allocate_data_p);
+    result->nib  = allocate_navigation_information_block(allocate_data_p);
+    result->cib  = allocate_calibration_information_block(allocate_data_p);
+    result->iib  = allocate_inter_calibration_information_block(allocate_data_p);
+    result->sib  = allocate_segment_information_block(allocate_data_p);
+    result->ncib = allocate_navigation_correction_information_block(allocate_data_p);
 
     return result;
 }
@@ -1064,6 +1356,19 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
                                              fill_data_p,
                                              block_offset);
     block_offset += hsd->iib->block_length;
+    
+    read_segment_information_block(fp,
+                                   hsd->sib,
+                                   fill_data_p,
+                                   block_offset);
+    block_offset += hsd->sib->block_length;
+
+    read_navigation_correction_information_block(fp,
+                                   hsd->ncib,
+                                   fill_data_p,
+                                   block_offset);
+    block_offset += hsd->ncib->block_length;
+
 
     fclose(fp);
 }
