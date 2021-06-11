@@ -228,6 +228,24 @@ typedef struct OTIB
 
 
 
+// Error information block
+typedef struct EIB
+{
+ 
+    uint8_t  header_block_number;       // 10 (fixed value)
+    uint32_t block_length;              // bytes NOTE: uint32_t instead of uint16_t
+    
+    uint16_t  number_of_error_information_data;
+    uint16_t* error_line_number;
+    uint16_t* error_pixels_for_line;
+
+    uint8_t   spare[40];
+
+    uint8_t* data_p;
+    uint64_t data_length;
+
+}EIB;
+
 // A whole HSD file
 typedef struct HSD
 {
@@ -240,6 +258,7 @@ typedef struct HSD
     SIB*  sib;
     NCIB* ncib;
     OTIB* otib;
+    EIB*  eib;
 }HSD;
 
 
@@ -288,6 +307,12 @@ OTIB* allocate_observation_time_information_block(bool allocate_data_p);
 void deallocate_observation_time_information_block(OTIB* otib);
 void read_observation_time_information_block(FILE* fp, OTIB* otib, bool fill_data_p, uint32_t header_offset);
 void print_observation_time_information_block(OTIB* otib);
+
+EIB* allocate_error_information_block(bool allocate_data_p);
+void deallocate_error_information_block(EIB* eib);
+void read_error_information_block(FILE* fp, EIB* eib, bool fill_data_p, uint32_t header_offset);
+void print_error_information_block(EIB* eib);
+
 
 
 HSD* allocate_hsd(bool allocate_data_p);

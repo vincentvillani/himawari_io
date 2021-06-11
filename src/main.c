@@ -31,6 +31,7 @@ int main(int argc, char** argv)
     print_segment_information_block(hsd->sib);
     print_navigation_correction_information_block(hsd->ncib);
     print_observation_time_information_block(hsd->otib);
+    print_error_information_block(hsd->eib);
 
     // TODO: Free structs
 
