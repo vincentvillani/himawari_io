@@ -208,13 +208,24 @@ typedef struct NCIB
 
 }NCIB;
 
-/*
+
+
 // Observation time information block
-typedef struct OIB
+typedef struct OTIB
 {
-    
-}OIB;
-*/
+    uint8_t  header_block_number;       // 9 (fixed value)
+    uint16_t block_length;              // bytes
+
+    uint16_t  number_of_observation_times;  // AKA scanline times
+    uint16_t* observation_time_line_number; // The line number the observation time is for
+    double*   observation_time;             // MJD
+    uint8_t   spare[40];
+
+    uint8_t* data_p;
+    uint64_t data_length;
+
+}OTIB;
+
 
 
 // A whole HSD file
@@ -228,7 +239,9 @@ typedef struct HSD
     IIB*  iib;
     SIB*  sib;
     NCIB* ncib;
+    OTIB* otib;
 }HSD;
+
 
 
 BIB* allocate_basic_information_block(bool allocate_data_p);
@@ -271,10 +284,13 @@ void deallocate_navigation_correction_information_block(NCIB* ncib);
 void read_navigation_correction_information_block(FILE* fp, NCIB* ncib, bool fill_data_p, uint32_t header_offset);
 void print_navigation_correction_information_block(NCIB* ncib);
 
+OTIB* allocate_observation_time_information_block(bool allocate_data_p);
+void deallocate_observation_time_information_block(OTIB* otib);
+void read_observation_time_information_block(FILE* fp, OTIB* otib, bool fill_data_p, uint32_t header_offset);
+void print_observation_time_information_block(OTIB* otib);
 
 
 HSD* allocate_hsd(bool allocate_data_p);
-
 void read_file(const char* filepath, HSD* hsd, bool fill_data_p);
 
 #endif

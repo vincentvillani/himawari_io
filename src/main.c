@@ -30,6 +30,7 @@ int main(int argc, char** argv)
     print_inter_calibration_information_block(hsd->iib);
     print_segment_information_block(hsd->sib);
     print_navigation_correction_information_block(hsd->ncib);
+    print_observation_time_information_block(hsd->otib);
 
     // TODO: Free structs
 

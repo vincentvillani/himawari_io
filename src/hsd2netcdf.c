@@ -1240,14 +1240,6 @@ void read_navigation_correction_information_block(FILE* fp, NCIB* ncib, bool fil
 
 void print_navigation_correction_information_block(NCIB* ncib)
 {
-        /*
-        ncib->line_number_after_rotation = 
-            (uint16_t*)malloc(sizeof(uint16_t) * ncib->number_of_corrections);
-        ncib->shift_for_column_direction = 
-            (float*)malloc(sizeof(float) * ncib->number_of_correction);
-        ncib->shift_for_line_direction = 
-            (float*)malloc(sizeof(float) * ncib->number_of_correction);
-        */
     const uint32_t buffer_length = 256 * ncib->number_of_corrections;
     char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
     uint32_t       written_chars = 0;
@@ -1288,6 +1280,154 @@ void print_navigation_correction_information_block(NCIB* ncib)
 
 
 
+OTIB* allocate_observation_time_information_block(bool allocate_data_p)
+{
+    OTIB* result    = (OTIB*)calloc(1, sizeof(OTIB));
+    result->data_p = NULL;
+    if(allocate_data_p)
+    {
+        // TODO
+        fprintf(stderr,
+                "%s:%s: Not currently supported\n",
+                __FILE__,
+                (char*)__LINE__);
+        exit(1);
+    }
+
+    return result;
+
+}
+
+
+
+void deallocate_observation_time_information_block(OTIB* otib)
+{
+    if(otib->observation_time_line_number)
+        free(otib->observation_time_line_number);
+
+    if(otib->observation_time)
+        free(otib->observation_time);
+
+    if(otib->data_p)
+        free(otib->data_p);
+
+    free(otib);
+}
+
+
+
+void read_observation_time_information_block(FILE* fp, OTIB* otib, bool fill_data_p, uint32_t header_offset)
+{
+    bool     buffer_allocated = false;
+    uint8_t* buffer           = NULL;
+
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Do we need to allocate a buffer?
+    if(fill_data_p)
+    {
+        buffer = otib->data_p;
+    }
+    else
+    {
+        buffer = (uint8_t*)calloc(1, block_length);
+        buffer_allocated = true;
+    }
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    otib->header_block_number = block_number;
+    otib->block_length        = block_length;
+    
+    memcpy(&(otib->number_of_observation_times),
+           buffer + 3,
+           2);
+
+    uint32_t buffer_offset = 5;
+    if(otib->number_of_observation_times > 0)
+    {
+        otib->observation_time_line_number = 
+            (uint16_t*)malloc(sizeof(uint16_t) * otib->number_of_observation_times);
+        otib->observation_time = 
+            (double*)malloc(sizeof(double) * otib->number_of_observation_times);
+
+        for(uint32_t i = 0; i < otib->number_of_observation_times; ++i)
+        {
+            memcpy(otib->observation_time_line_number + i,
+                   buffer + buffer_offset,
+                   2);
+            buffer_offset += 2;
+
+            memcpy(otib->observation_time + i,
+                   buffer + buffer_offset,
+                   8);
+            buffer_offset += 8;
+        }
+    }
+
+    memcpy(&(otib->spare),
+           buffer + buffer_offset,
+           40);
+
+    if(buffer_allocated)
+        free(buffer);
+}
+
+
+
+void print_observation_time_information_block(OTIB* otib)
+{
+    const uint32_t buffer_length = 256 * otib->number_of_observation_times;
+    char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
+    uint32_t       written_chars = 0;
+
+    for(uint32_t i = 0; i < otib->number_of_observation_times; ++i)
+    {
+        written_chars += snprintf(buffer + written_chars,
+                                  buffer_length - written_chars,
+                                  "      Observation time %u:\n"
+                                  "        Line number            : %u\n"
+                                  "        Observation time (mjd) : %f\n",
+                                  i + 1,
+                                  otib->observation_time_line_number[i],
+                                  otib->observation_time[i]);
+    }
+
+    printf("Observation Time Information Block:\n\n"
+           "    Block number                 : %u\n"
+           "    Block length (bytes)         : %u\n"
+           "    Number of observation times  : %u\n"
+           "%s\n"
+           "\n",
+           otib->header_block_number,
+           otib->block_length,
+           otib->number_of_observation_times,
+           buffer);
+
+    free(buffer);
+}
+
+
 
 HSD* allocate_hsd(bool allocate_data_p)
 {
@@ -1301,6 +1441,7 @@ HSD* allocate_hsd(bool allocate_data_p)
     result->iib  = allocate_inter_calibration_information_block(allocate_data_p);
     result->sib  = allocate_segment_information_block(allocate_data_p);
     result->ncib = allocate_navigation_correction_information_block(allocate_data_p);
+    result->otib = allocate_observation_time_information_block(allocate_data_p);
 
     return result;
 }
@@ -1345,6 +1486,7 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
                                       fill_data_p,
                                       block_offset);
     block_offset += hsd->nib->block_length;
+
     read_calibration_information_block(fp,
                                        hsd->cib,
                                        fill_data_p,
@@ -1364,11 +1506,16 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
     block_offset += hsd->sib->block_length;
 
     read_navigation_correction_information_block(fp,
-                                   hsd->ncib,
-                                   fill_data_p,
-                                   block_offset);
+                                                 hsd->ncib,
+                                                 fill_data_p,
+                                                 block_offset);
     block_offset += hsd->ncib->block_length;
 
+    read_observation_time_information_block(fp,
+                                            hsd->otib,
+                                            fill_data_p,
+                                            block_offset);
+    block_offset += hsd->otib->block_length;
 
     fclose(fp);
 }
