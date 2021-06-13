@@ -15,8 +15,12 @@ int main(int argc, char** argv)
     HSD* hsd = allocate_hsd();
 
     // Read file
-    read_file("../test_data/HS_H08_20210603_0300_B13_FLDK_R20_S0110.DAT",
+    //read_file("../test_data/HS_H08_20210603_0300_B01_FLDK_R10_S0110.DAT",
+    //          hsd);
+    read_file("../test_data/HS_H08_20210603_0300_B07_FLDK_eR20_S0110.DAT",
               hsd);
+    //read_file("../test_data/HS_H08_20210603_0300_B13_FLDK_R20_S0110.DAT",
+    //          hsd);
 
     // Print header information
     print_header(hsd);

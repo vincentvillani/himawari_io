@@ -665,6 +665,8 @@ CIB* allocate_calibration_information_block()
 
 void deallocate_calibration_information_block(CIB* cib)
 {
+    if(cib->spare)
+        free(cib->spare);
     free(cib);
 }
 
@@ -704,72 +706,120 @@ void read_calibration_information_block(FILE*    fp,
 
     cib->header_block_number = block_number;
     cib->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
     memcpy(&(cib->band_number),
-           buffer + 3,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(cib->central_wave_length),
-           buffer + 5,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(cib->bits_per_pixel),
-           buffer + 13,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(cib->error_pixel_value),
-           buffer + 15,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(cib->outside_scan_pixel_value),
-           buffer + 17,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(cib->count_radiance_slope),
-           buffer + 19,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(cib->count_radiance_intercept),
-           buffer + 27,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
 
     // If this is an IR band
     if(cib->band_number >=7 )
     {
         memcpy(&(cib->ir_rad_to_bt_c0),
-               buffer + 35,
+               buffer + buffer_offset,
                8);
+        buffer_offset += 8;
+
         memcpy(&(cib->ir_rad_to_bt_c1),
-               buffer + 43,
+               buffer + buffer_offset,
                8);
+        buffer_offset += 8;
+
         memcpy(&(cib->ir_rad_to_bt_c2),
-               buffer + 51,
+               buffer + buffer_offset,
                8);
+        buffer_offset += 8;
+
         memcpy(&(cib->ir_bt_to_rad_c0),
-               buffer + 59,
+               buffer + buffer_offset,
                8);
+        buffer_offset += 8;
+
         memcpy(&(cib->ir_bt_to_rad_c1),
-               buffer + 67,
+               buffer + buffer_offset,
                8);
+        buffer_offset += 8;
+
         memcpy(&(cib->ir_bt_to_rad_c2),
-               buffer + 75,
+               buffer + buffer_offset,
                8);
-        memcpy(&(cib->spare),
-               buffer + 83,
-               40);
+        buffer_offset += 8;
+
+        memcpy(&(cib->ir_c),
+               buffer + buffer_offset,
+               8);
+        buffer_offset += 8;
+        
+        memcpy(&(cib->ir_h),
+               buffer + buffer_offset,
+               8);
+        buffer_offset += 8;
+
+        memcpy(&(cib->ir_k),
+               buffer + buffer_offset,
+               8);
+        buffer_offset += 8;
     }
     // Else this is a VIS/NIR band
     else
     {
         memcpy(&(cib->vis_nir_c_prime),
-               buffer + 35,
+               buffer + buffer_offset,
                8);
+        buffer_offset += 8;
+
         memcpy(&(cib->vis_nir_calib_update_time),
-               buffer + 43,
+               buffer + buffer_offset,
                8);
+        buffer_offset += 8;
+
         memcpy(&(cib->vis_nir_count_radiance_slope),
-               buffer + 51,
+               buffer + buffer_offset,
                8);
+        buffer_offset += 8;
+
         memcpy(&(cib->vis_nir_count_radiance_intercept),
-               buffer + 59,
+               buffer + buffer_offset,
                8);
-        memcpy(&(cib->spare),
-               buffer + 67,
-               80);
+        buffer_offset += 8;
     }
+
+    cib->spare_length = cib->block_length - buffer_offset;
+    cib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * cib->spare_length);
+    memcpy(cib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * cib->spare_length);
 
     free(buffer);
 }
@@ -796,6 +846,10 @@ void print_calibration_information_block(CIB* cib)
                "    IR BT to radiance c0        : %f\n"
                "    IR BT to radiance c1        : %f\n"
                "    IR BT to radiance c2        : %f\n"
+               "    Speed of light (c)          : %f\n"
+               "    Planck constant (h)         : %f\n"
+               "    Boltzmann constant (k)      : %f\n"
+               "    Spare length (bytes)        : %lu\n"
                "\n",
                cib->header_block_number,
                cib->block_length,
@@ -811,7 +865,11 @@ void print_calibration_information_block(CIB* cib)
                cib->ir_rad_to_bt_c2,
                cib->ir_bt_to_rad_c0,
                cib->ir_bt_to_rad_c1,
-               cib->ir_bt_to_rad_c2);
+               cib->ir_bt_to_rad_c2,
+               cib->ir_c,
+               cib->ir_h,
+               cib->ir_k,
+               sizeof(uint8_t) * cib->spare_length);
     }
     else
     {
@@ -829,6 +887,7 @@ void print_calibration_information_block(CIB* cib)
                "    VIS/IR calibration update time (mjd)       : %f\n"
                "    VIS/IR updated count to radiance slope     : %f\n"
                "    VIS/IR updated count to radiance intercept : %f\n"
+               "    Spare length (bytes)                       : %lu\n"
                "\n",
                cib->header_block_number,
                cib->block_length,
@@ -842,7 +901,8 @@ void print_calibration_information_block(CIB* cib)
                cib->vis_nir_c_prime,
                cib->vis_nir_calib_update_time,
                cib->vis_nir_count_radiance_slope,
-               cib->vis_nir_count_radiance_intercept);
+               cib->vis_nir_count_radiance_intercept,
+               sizeof(uint8_t) * cib->spare_length);
     }
 }
 
@@ -1668,9 +1728,9 @@ void read_file(const char* filepath,
     if(fp == NULL)
     {
         fprintf(stderr,
-                "%s:%s: Failed to open file %s\n",
+                "%s:%d: Failed to open file %s\n",
                 __FILE__,
-                (char*)__LINE__,
+                __LINE__,
                 filepath);
         exit(1);
     }

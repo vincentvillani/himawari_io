@@ -112,27 +112,31 @@ typedef struct NIB
 // Calibration Information Block
 typedef struct CIB
 {
-    uint8_t  header_block_number;      // 5 (fixed value)
-    uint16_t block_length;             // 147 bytes (fixed value)
-    uint16_t band_number;              // [1-16]
-    double   central_wave_length;      // um (fixed for each band)
-    uint16_t bits_per_pixel;           // 11, 12 or 14 (band dependent)
-    uint16_t error_pixel_value;        // 65535 (fixed value)
-    uint16_t outside_scan_pixel_value; // 65534 (fixed value)
-    double   count_radiance_slope;
-    double   count_radiance_intercept;
-    double   ir_rad_to_bt_c0;
-    double   ir_rad_to_bt_c1;
-    double   ir_rad_to_bt_c2;
-    double   ir_bt_to_rad_c0;
-    double   ir_bt_to_rad_c1;
-    double   ir_bt_to_rad_c2;
-    double   vis_nir_c_prime;
-    double   vis_nir_calib_update_time;        // Update time of the following two 
-                                               // calibration values (mjd)
-    double   vis_nir_count_radiance_slope;
-    double   vis_nir_count_radiance_intercept;
-    uint8_t  spare[80];
+    uint8_t   header_block_number;      // 5 (fixed value)
+    uint16_t  block_length;             // 147 bytes (fixed value)
+    uint16_t  band_number;              // [1-16]
+    double    central_wave_length;      // um (fixed for each band)
+    uint16_t  bits_per_pixel;           // 11, 12 or 14 (band dependent)
+    uint16_t  error_pixel_value;        // 65535 (fixed value)
+    uint16_t  outside_scan_pixel_value; // 65534 (fixed value)
+    double    count_radiance_slope;
+    double    count_radiance_intercept;
+    double    ir_rad_to_bt_c0;
+    double    ir_rad_to_bt_c1;
+    double    ir_rad_to_bt_c2;
+    double    ir_bt_to_rad_c0;
+    double    ir_bt_to_rad_c1;
+    double    ir_bt_to_rad_c2;
+    double    ir_c;                             // Speed of light (m/s)
+    double    ir_h;                             // Planck constant (Js)
+    double    ir_k;                             // Boltzmann constant (J/K)
+    double    vis_nir_c_prime;
+    double    vis_nir_calib_update_time;        // Update time of the following two 
+                                                // calibration values (mjd)
+    double    vis_nir_count_radiance_slope;
+    double    vis_nir_count_radiance_intercept;
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }CIB;
 
 
