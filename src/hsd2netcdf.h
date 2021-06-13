@@ -297,6 +297,7 @@ void read_basic_information_block(FILE*    fp,
 void print_basic_information_block(BIB* bib);
 
 
+
 DIB* allocate_data_information_block();
 void deallocate_data_information_block(DIB* dib);
 void read_data_information_block(FILE*    fp,
@@ -305,10 +306,15 @@ void read_data_information_block(FILE*    fp,
 void print_data_information_block(DIB* dib);
 
 
-PIB* allocate_projection_information_block(bool allocate_data_p);
+
+PIB* allocate_projection_information_block();
 void deallocate_projection_information_block(PIB* pib);
-void read_projection_information_block(FILE* fp, PIB* pib, bool fill_data_p, uint32_t header_offset);
+void read_projection_information_block(FILE*    fp,
+                                       PIB*     pib,
+                                       uint32_t header_offset);
 void print_projection_information_block(PIB* pib);
+
+
 
 NIB* allocate_navigation_information_block(bool allocate_data_p);
 void deallocate_navigation_information_block(NIB* nib);

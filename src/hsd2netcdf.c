@@ -258,41 +258,26 @@ void print_data_information_block(DIB* dib)
 
 
 
-PIB* allocate_projection_information_block(bool allocate_data_p)
+PIB* allocate_projection_information_block()
 {
-    PIB* result    = (PIB*)calloc(1, sizeof(PIB));
-    result->data_p = NULL;
-
-    if(allocate_data_p)
-    {
-        // TODO
-        fprintf(stderr,
-                "%s:%s: Not currently supported\n",
-                __FILE__,
-                (char*)__LINE__);
-        exit(1);
-    }
-
+    PIB* result    = (PIB*)calloc(1,
+                                  sizeof(PIB));
     return result;
-
 }
 
 
 
 void deallocate_projection_information_block(PIB* pib)
 {
-    if(pib->data_p)
-        free(pib->data_p);
     free(pib);
 }
 
 
 
-void read_projection_information_block(FILE* fp, PIB* pib, bool fill_data_p, uint32_t header_offset)
+void read_projection_information_block(FILE*    fp,
+                                       PIB*     pib,
+                                       uint32_t header_offset)
 {
-    bool     buffer_allocated = false;
-    uint8_t* buffer           = NULL;
-
     // Read the block number/id and block size
     uint8_t  block_number = 0;
     uint16_t block_length = 0;
@@ -308,16 +293,9 @@ void read_projection_information_block(FILE* fp, PIB* pib, bool fill_data_p, uin
           1,
           fp);
 
-    // Do we need to allocate a buffer?
-    if(fill_data_p)
-    {
-        buffer = pib->data_p;
-    }
-    else
-    {
-        buffer = (uint8_t*)calloc(1, block_length);
-        buffer_allocated = true;
-    }
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
 
     // Read in the whole block
     fseek(fp,
@@ -376,15 +354,13 @@ void read_projection_information_block(FILE* fp, PIB* pib, bool fill_data_p, uin
            buffer + 87,
            40);
 
-    if(buffer_allocated)
-        free(buffer);
+    free(buffer);
 }
 
 
 
 void print_projection_information_block(PIB* pib)
 {
-
     printf("Projection Information Block:\n\n"
            "    Block number          : %u\n"
            "    Block length (bytes)  : %u\n"
@@ -419,8 +395,6 @@ void print_projection_information_block(PIB* pib)
            pib->Sd_coefficient,
            pib->resampling_types,
            pib->resampling_size);
-
-
 }
 
 
@@ -1673,7 +1647,7 @@ HSD* allocate_hsd(bool allocate_data_p)
 
     result->bib  = allocate_basic_information_block();
     result->dib  = allocate_data_information_block();
-    result->pib  = allocate_projection_information_block(allocate_data_p);
+    result->pib  = allocate_projection_information_block();
     result->nib  = allocate_navigation_information_block(allocate_data_p);
     result->cib  = allocate_calibration_information_block(allocate_data_p);
     result->iib  = allocate_inter_calibration_information_block(allocate_data_p);
@@ -1716,7 +1690,6 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
 
     read_projection_information_block(fp,
                                       hsd->pib,
-                                      fill_data_p,
                                       block_offset);
     block_offset += hsd->pib->block_length;
 
