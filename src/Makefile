@@ -1,14 +1,14 @@
 # Gather all source files
 # ------------------------------------------------------
 
-hsd2nc4_src_c=$(wildcard *.c)
+himawari_io_src_c=$(wildcard *.c)
 
 
 
 # Generate .o file filenames
 # ------------------------------------------------------
 
-hsd2nc4_obj=$(hsd2nc4_src_c:.c=.o)
+himawari_io_obj=$(himawari_io_src_c:.c=.o)
 
 
 # Flags
@@ -46,17 +46,17 @@ endif
 
 
 
-hsd2nc4: $(hsd2nc4_obj)
-	$(CC) -o ../bin/hsd2nc4 $(hsd2nc4_obj) $(LIBS)
+himawari_io: $(himawari_io_obj)
+	$(CC) -o ../bin/himawari_io $(himawari_io_obj) $(LIBS)
 
 
-release: hsd2nc4
-debug: hsd2nc4
+release: himawari_io
+debug: himawari_io
 
 
 .PHONY: clean
 clean:
-	rm -f $(hsd2nc4_obj) \
-          ../bin/hsd2nc4
+	rm -f $(himawari_io_obj) \
+          ../bin/himawari_io
 
 
