@@ -144,19 +144,19 @@ typedef struct CIB
 // Inter-calibration Information Block
 typedef struct IIB
 {
-    uint8_t  header_block_number;      // 6 (fixed value)
-    uint16_t block_length;             // 259 bytes (fixed value)
-    double   gsics_calibration_intercept;
-    double   gsics_calibration_slope;
-    double   gsics_calibration_quadratic;
-    double   radiance_bias;                    // For standard scene
-    double   radiance_bias_uncertainty;        // For standard scene
-    double   radiance;                         // For standard scene
-    double   gsics_calibration_validity_start; // MJD
-    double   gsics_calibration_validity_end;   // MJD
-    float    gsics_radiance_validity_upper_limit;
-    float    gsics_radiance_validity_lower_limit;
-    char     gsics_correction_filename[128];
+    uint8_t   header_block_number;      // 6 (fixed value)
+    uint16_t  block_length;             // 259 bytes (fixed value)
+    double    gsics_calibration_intercept;
+    double    gsics_calibration_slope;
+    double    gsics_calibration_quadratic;
+    double    radiance_bias;                    // For standard scene
+    double    radiance_bias_uncertainty;        // For standard scene
+    double    radiance;                         // For standard scene
+    double    gsics_calibration_validity_start; // MJD
+    double    gsics_calibration_validity_end;   // MJD
+    float     gsics_radiance_validity_upper_limit;
+    float     gsics_radiance_validity_lower_limit;
+    char      gsics_correction_filename[128];
     uint8_t*  spare;
     uint32_t  spare_length;
 }IIB;
@@ -166,12 +166,13 @@ typedef struct IIB
 // Segment information block
 typedef struct SIB
 {
-    uint8_t  header_block_number;       // 7 (fixed value)
-    uint16_t block_length;              // 47 bytes (fixed value)
-    uint8_t  total_segments;            // Total number of segments for this band/obs type
-    uint8_t  segment_number;            // Segment number out of total segments
-    uint16_t segment_first_line_number; // First line number of sequence
-    uint8_t  spare[40];
+    uint8_t   header_block_number;       // 7 (fixed value)
+    uint16_t  block_length;              // 47 bytes (fixed value)
+    uint8_t   total_segments;            // Total number of segments for this band/obs type
+    uint8_t   segment_number;            // Segment number out of total segments
+    uint16_t  segment_first_line_number; // First line number of sequence
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }SIB;
 
 

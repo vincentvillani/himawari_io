@@ -1075,6 +1075,8 @@ SIB* allocate_segment_information_block()
 
 void deallocate_segment_information_block(SIB* sib)
 {
+    if(sib->spare)
+        free(sib->spare);
     free(sib);
 }
 
@@ -1114,18 +1116,28 @@ void read_segment_information_block(FILE*    fp,
 
     sib->header_block_number = block_number;
     sib->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
     memcpy(&(sib->total_segments),
-           buffer + 3,
+           buffer + buffer_offset,
            1);
+    buffer_offset += 1;
+
     memcpy(&(sib->segment_number),
-           buffer + 4,
+           buffer + buffer_offset,
            1);
+    buffer_offset += 1;
+
     memcpy(&(sib->segment_first_line_number),
-           buffer + 5,
+           buffer + buffer_offset,
            2);
-    memcpy(&(sib->spare),
-           buffer + 7,
-           40);
+    buffer_offset += 2;
+
+    sib->spare_length = sib->block_length - buffer_offset;
+    sib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * sib->spare_length);
+    memcpy(sib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * sib->spare_length);
 
     free(buffer);
 }
@@ -1140,12 +1152,14 @@ void print_segment_information_block(SIB* sib)
            "    Total segments               : %u\n"
            "    Segment number               : %u\n"
            "    First line number of segment : %u\n"
+           "    Spare length                 : %lu\n"
            "\n",
            sib->header_block_number,
            sib->block_length,
            sib->total_segments,
            sib->segment_number,
-           sib->segment_first_line_number);
+           sib->segment_first_line_number,
+           sizeof(uint8_t) * sib->spare_length);
 }
 
 
