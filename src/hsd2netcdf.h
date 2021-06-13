@@ -170,7 +170,7 @@ typedef struct IIB
 
 
 
-
+// Segment information block
 typedef struct SIB
 {
     uint8_t  header_block_number;       // 7 (fixed value)
@@ -402,6 +402,7 @@ HSD* allocate_hsd();
 void read_file(const char* filepath,
                HSD*        hsd);
 void deallocate_hsd(HSD* hsd);
+
 
 
 #endif
