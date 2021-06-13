@@ -1340,20 +1340,10 @@ void print_error_information_block(EIB* eib)
 
 
 
-SB* allocate_spare_block(bool allocate_data_p)
+SB* allocate_spare_block()
 {
-    SB* result    = (SB*)calloc(1, sizeof(SB));
-    result->data_p = NULL;
-    if(allocate_data_p)
-    {
-        // TODO
-        fprintf(stderr,
-                "%s:%s: Not currently supported\n",
-                __FILE__,
-                (char*)__LINE__);
-        exit(1);
-    }
-
+    SB* result = (SB*)calloc(1,
+                             sizeof(SB));
     return result;
 }
 
@@ -1361,20 +1351,15 @@ SB* allocate_spare_block(bool allocate_data_p)
 
 void deallocate_spare_block(SB* sb)
 {
-    if(sb->data_p)
-        free(sb->data_p);
-
     free(sb);
 }
 
 
 
-void read_spare_block(FILE* fp, SB* sb, bool fill_data_p, uint32_t header_offset)
+void read_spare_block(FILE*    fp,
+                      SB*      sb,
+                      uint32_t header_offset)
 {
-
-    bool     buffer_allocated = false;
-    uint8_t* buffer           = NULL;
-
     // Read the block number/id and block size
     uint8_t  block_number = 0;
     uint32_t block_length = 0;
@@ -1390,16 +1375,9 @@ void read_spare_block(FILE* fp, SB* sb, bool fill_data_p, uint32_t header_offset
           1,
           fp);
 
-    // Do we need to allocate a buffer?
-    if(fill_data_p)
-    {
-        buffer = sb->data_p;
-    }
-    else
-    {
-        buffer = (uint8_t*)calloc(1, block_length);
-        buffer_allocated = true;
-    }
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
 
     // Read in the whole block
     fseek(fp,
@@ -1417,8 +1395,7 @@ void read_spare_block(FILE* fp, SB* sb, bool fill_data_p, uint32_t header_offset
            buffer + 3,
            256);
 
-    if(buffer_allocated)
-        free(buffer);
+    free(buffer);
 }
 
 
@@ -1437,8 +1414,8 @@ void print_spare_block(SB* sb)
 
 DB* allocate_data_block()
 {
-    DB* result = (DB*)calloc(1, sizeof(DB));
-
+    DB* result = (DB*)calloc(1,
+                             sizeof(DB));
     return result;
 }
 
@@ -1453,7 +1430,10 @@ void deallocate_data_block(DB* db)
 
 
 
-void read_data_block(FILE* fp, DB* db, uint32_t header_offset, uint32_t length)
+void read_data_block(FILE*    fp,
+                     DB*      db,
+                     uint32_t header_offset,
+                     uint32_t length)
 {
     db->data   = (uint16_t*)malloc(sizeof(uint16_t) * length);
     db->length = length;
@@ -1480,9 +1460,10 @@ void print_data_block(DB* db)
 
 
 
-HSD* allocate_hsd(bool allocate_data_p)
+HSD* allocate_hsd()
 {
-    HSD* result = (HSD*)calloc(1, sizeof(HSD));
+    HSD* result = (HSD*)calloc(1,
+                               sizeof(HSD));
 
     result->bib  = allocate_basic_information_block();
     result->dib  = allocate_data_information_block();
@@ -1494,7 +1475,7 @@ HSD* allocate_hsd(bool allocate_data_p)
     result->ncib = allocate_navigation_correction_information_block();
     result->otib = allocate_observation_time_information_block();
     result->eib  = allocate_error_information_block();
-    result->sb   = allocate_spare_block(allocate_data_p);
+    result->sb   = allocate_spare_block();
     result->db   = allocate_data_block();
 
     return result;
@@ -1502,9 +1483,11 @@ HSD* allocate_hsd(bool allocate_data_p)
 
 
 
-void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
+void read_file(const char* filepath,
+               HSD*        hsd)
 {
-    FILE* fp = fopen(filepath, "r");
+    FILE* fp = fopen(filepath,
+                     "r");
     if(fp == NULL)
     {
         fprintf(stderr,
@@ -1516,7 +1499,6 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
     }
 
     uint32_t block_offset = 0;
-
     read_basic_information_block(fp,
                                  hsd->bib,
                                  block_offset);
@@ -1569,7 +1551,6 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
 
     read_spare_block(fp,
                      hsd->sb,
-                     fill_data_p,
                      block_offset);
     block_offset += hsd->sb->block_length;
 
