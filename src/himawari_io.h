@@ -11,29 +11,30 @@
 // Basic information block
 typedef struct BIB
 {
-    uint8_t  header_block_number;       // 1 (fixed value)
-    uint16_t block_length;              // 282 bytes (fixed value)
-    uint16_t total_header_blocks;       // 11 (fixed value)
-    uint8_t  byte_order;                // 0 = little endian, 1 = big endian
-    char     satellite_name[16];    
-    char     processing_center[16];
-    char     observation_area[5];       // Note: extra byte required, they didn't leave space
-                                        // for a null char.
-    char     other_observation_info[3]; // Note: extra byte required, they didn't leave space
-                                        // for a null char. Processing center use only
-    uint16_t observation_timeline;      // hhmm
-    double   observation_start_time;    // mjd
-    double   observation_end_time;      // mjd
-    double   file_creation_time;        // mjd
-    uint32_t total_header_length;
-    uint32_t total_data_length;
-    uint8_t  quality_flag_1;
-    uint8_t  quality_flag_2;
-    uint8_t  quality_flag_3;
-    uint8_t  quality_flag_4;
-    char     file_format_version[32];
-    char     filename[32];
-    uint8_t  spare[40];
+    uint8_t   header_block_number;       // 1 (fixed value)
+    uint16_t  block_length;              // 282 bytes (fixed value)
+    uint16_t  total_header_blocks;       // 11 (fixed value)
+    uint8_t   byte_order;                // 0 = little endian, 1 = big endian
+    char      satellite_name[16];    
+    char      processing_center[16];
+    char      observation_area[5];       // Note: extra byte required, they didn't leave space
+                                         // for a null char.
+    char      other_observation_info[3]; // Note: extra byte required, they didn't leave space
+                                         // for a null char. Processing center use only
+    uint16_t  observation_timeline;      // hhmm
+    double    observation_start_time;    // mjd
+    double    observation_end_time;      // mjd
+    double    file_creation_time;        // mjd
+    uint32_t  total_header_length;
+    uint32_t  total_data_length;
+    uint8_t   quality_flag_1;
+    uint8_t   quality_flag_2;
+    uint8_t   quality_flag_3;
+    uint8_t   quality_flag_4;
+    char      file_format_version[32];
+    char      filename[128];
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }BIB;
 
 
@@ -48,9 +49,6 @@ typedef struct DIB
     uint16_t number_of_rows;      // y
     uint8_t  compression_flag;    // 0 = no compression, 1 = gzip, 2 = bzip2
     uint8_t  spare[40];
-
-    uint8_t* data_p;
-    uint64_t data_length;
 }DIB;
 
 
@@ -82,9 +80,6 @@ typedef struct PIB
     uint16_t resampling_types;    // Resampling types
     uint16_t resampling_size;     // Resampling size
     uint8_t  spare[40];
-
-    uint8_t* data_p;
-    uint64_t data_length;
 }PIB;
 
 
@@ -107,9 +102,6 @@ typedef struct NIB
     double   moon_position_y;             
     double   moon_position_z;             
     uint8_t  spare[40];
-
-    uint8_t* data_p;
-    uint64_t data_length;
 }NIB;
 
 
@@ -137,11 +129,7 @@ typedef struct CIB
                                                // calibration values (mjd)
     double   vis_nir_count_radiance_slope;
     double   vis_nir_count_radiance_intercept;
-
     uint8_t  spare[80];
-
-    uint8_t* data_p;
-    uint64_t data_length;
 }CIB;
 
 
@@ -163,9 +151,6 @@ typedef struct IIB
     float    gsics_radiance_validity_lower_limit;
     char     gsics_correction_filename[128];
     uint8_t  spare[56];
-
-    uint8_t* data_p;
-    uint64_t data_length;
 }IIB;
 
 
@@ -179,30 +164,22 @@ typedef struct SIB
     uint8_t  segment_number;            // Segment number out of total segments
     uint16_t segment_first_line_number; // First line number of sequence
     uint8_t  spare[40];
-
-    uint8_t* data_p;
-    uint64_t data_length;
 }SIB;
 
 
 // Navigation correction information block
 typedef struct NCIB
 {
-    uint8_t  header_block_number;       // 8 (fixed value)
-    uint16_t block_length;              // bytes
-    float    center_column_of_rotation; 
-    float    center_line_of_rotation;
-    double   rotational_correction;     // urad
-
+    uint8_t   header_block_number;       // 8 (fixed value)
+    uint16_t  block_length;              // bytes
+    float     center_column_of_rotation; 
+    float     center_line_of_rotation;
+    double    rotational_correction;     // urad
     uint16_t  number_of_corrections;      
     uint16_t* line_number_after_rotation;
     float*    shift_for_column_direction;
     float*    shift_for_line_direction;
     uint8_t   spare[40];
-
-    uint8_t* data_p;
-    uint64_t data_length;
-
 }NCIB;
 
 
@@ -210,16 +187,12 @@ typedef struct NCIB
 // Observation time information block
 typedef struct OTIB
 {
-    uint8_t  header_block_number;       // 9 (fixed value)
-    uint16_t block_length;              // bytes
-
+    uint8_t   header_block_number;          // 9 (fixed value)
+    uint16_t  block_length;                 // bytes
     uint16_t  number_of_observation_times;  // AKA scanline times
     uint16_t* observation_time_line_number; // The line number the observation time is for
     double*   observation_time;             // MJD
     uint8_t   spare[40];
-
-    uint8_t* data_p;
-    uint64_t data_length;
 
 }OTIB;
 
@@ -228,18 +201,12 @@ typedef struct OTIB
 // Error information block
 typedef struct EIB
 {
- 
-    uint8_t  header_block_number;       // 10 (fixed value)
-    uint32_t block_length;              // bytes NOTE: uint32_t instead of uint16_t
-    
+    uint8_t   header_block_number;              // 10 (fixed value)
+    uint32_t  block_length;                     // bytes NOTE: uint32_t instead of uint16_t
     uint16_t  number_of_error_information_data;
     uint16_t* error_line_number;
     uint16_t* error_pixels_for_line;
-
     uint8_t   spare[40];
-
-    uint8_t* data_p;
-    uint64_t data_length;
 
 }EIB;
 
@@ -249,14 +216,9 @@ typedef struct EIB
 typedef struct SB
 {
 
-    uint8_t  header_block_number;       // 11 (fixed value)
-    uint16_t block_length;              // 259 bytes (fixed value)
-
-    uint8_t spare[256];
-
-    uint8_t* data_p;
-    uint64_t data_length;
-
+    uint8_t  header_block_number; // 11 (fixed value)
+    uint16_t block_length;        // 259 bytes (fixed value)
+    uint8_t  spare[256];
 }SB;
 
 

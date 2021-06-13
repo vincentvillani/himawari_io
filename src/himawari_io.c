@@ -15,6 +15,8 @@ BIB* allocate_basic_information_block()
 
 void deallocate_basic_information_block(BIB* bib)
 {
+    if(bib->spare)
+        free(bib->spare);
     free(bib);
 }
 
@@ -54,65 +56,105 @@ void read_basic_information_block(FILE* fp,
 
     bib->header_block_number = block_number;
     bib->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
     memcpy(&(bib->total_header_blocks),
-           buffer + 3,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(bib->byte_order),
-           buffer + 5,
+           buffer + buffer_offset,
            1);
+    buffer_offset += 1;
+
     memcpy(bib->satellite_name,
-           buffer + 6,
+           buffer + buffer_offset,
            16);
+    buffer_offset += 16;
+
     memcpy(bib->processing_center,
-           buffer + 22,
+           buffer + buffer_offset,
            16);
+    buffer_offset += 16;
+
     bib->observation_area[4] = '\0';
     memcpy(bib->observation_area,
-           buffer + 38,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     bib->other_observation_info[2] = '\0';
     memcpy(bib->other_observation_info,
-           buffer + 42,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(bib->observation_timeline),
-           buffer + 44,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(bib->observation_start_time),
-           buffer + 46,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(bib->observation_end_time),
-           buffer + 54,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(bib->file_creation_time),
-           buffer + 62,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(bib->total_header_length),
-           buffer + 70,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(bib->total_data_length),
-           buffer + 74,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(bib->quality_flag_1),
-           buffer + 78,
+           buffer + buffer_offset,
            1);
+    buffer_offset += 1;
+
     memcpy(&(bib->quality_flag_2),
-           buffer + 79,
+           buffer + buffer_offset,
            1);
+    buffer_offset += 1;
+
     memcpy(&(bib->quality_flag_3),
-           buffer + 80,
+           buffer + buffer_offset,
            1);
+    buffer_offset += 1;
+
     memcpy(&(bib->quality_flag_4),
-           buffer + 81,
+           buffer + buffer_offset,
            1);
+    buffer_offset += 1;
+
     memcpy(&(bib->file_format_version),
-           buffer + 82,
+           buffer + buffer_offset,
            32);
+    buffer_offset += 32;
+
     memcpy(&(bib->filename),
-           buffer + 114,
-           32);
-    memcpy(&(bib->spare),
-           buffer + 146,
-           40);
+           buffer + buffer_offset,
+           128);
+    buffer_offset += 128;
+
+    bib->spare_length = bib->block_length - buffer_offset;
+    bib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * bib->spare_length);
+    memcpy(bib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * bib->spare_length);
 
     free(buffer);
 }
@@ -142,6 +184,7 @@ void print_basic_information_block(BIB* bib)
            "    Quality Flag 4         : %u\n"
            "    File format version    : %s\n"
            "    Filename               : %s\n"
+           "    Spare length (bytes)   : %lu\n"
            "\n",
            bib->header_block_number,
            bib->block_length,
@@ -162,7 +205,8 @@ void print_basic_information_block(BIB* bib)
            bib->quality_flag_3,
            bib->quality_flag_4,
            bib->file_format_version,
-           bib->filename);
+           bib->filename,
+           sizeof(uint8_t) * bib->spare_length);
 }
 
 
@@ -1048,42 +1092,62 @@ void read_navigation_correction_information_block(FILE*    fp,
 
 void print_navigation_correction_information_block(NCIB* ncib)
 {
-    const uint32_t buffer_length = 256 * ncib->number_of_corrections;
-    char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
-    uint32_t       written_chars = 0;
-
-    for(uint32_t i = 0; i < ncib->number_of_corrections; ++i)
+    if(ncib->number_of_corrections > 0)
     {
-        written_chars += snprintf(buffer + written_chars,
-                                  buffer_length - written_chars,
-                                  "      Correction %u:\n"
-                                  "        Line number after rotation : %u\n"
-                                  "        Shift for column direction : %f\n"
-                                  "        Shift for line direction   : %f\n\n",
-                                  i + 1,
-                                  ncib->line_number_after_rotation[i],
-                                  ncib->shift_for_column_direction[i],
-                                  ncib->shift_for_line_direction[i]);
+        const uint32_t buffer_length = 256 * ncib->number_of_corrections;
+        char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
+        uint32_t       written_chars = 0;
+
+        for(uint32_t i = 0; i < ncib->number_of_corrections; ++i)
+        {
+            written_chars += snprintf(buffer + written_chars,
+                                      buffer_length - written_chars,
+                                      "      Correction %u:\n"
+                                      "        Line number after rotation : %u\n"
+                                      "        Shift for column direction : %f\n"
+                                      "        Shift for line direction   : %f\n\n",
+                                      i + 1,
+                                      ncib->line_number_after_rotation[i],
+                                      ncib->shift_for_column_direction[i],
+                                      ncib->shift_for_line_direction[i]);
+        }
+
+        printf("Navigation Correction Information Block:\n\n"
+               "    Block number                   : %u\n"
+               "    Block length (bytes)           : %u\n"
+               "    Center column of rotation      : %f\n"
+               "    Center line of rotation        : %f\n"
+               "    Rotational correction (urad)   : %f\n"
+               "    Number of corrections          : %u\n\n"
+               "%s\n"
+               "\n",
+               ncib->header_block_number,
+               ncib->block_length,
+               ncib->center_column_of_rotation,
+               ncib->center_line_of_rotation,
+               ncib->rotational_correction,
+               ncib->number_of_corrections,
+               buffer);
+
+        free(buffer);
     }
-
-    printf("Navigation Correction Information Block:\n\n"
-           "    Block number                   : %u\n"
-           "    Block length (bytes)           : %u\n"
-           "    Center column of rotation      : %f\n"
-           "    Center line of rotation        : %f\n"
-           "    Rotational correction (urad)   : %f\n"
-           "    Number of corrections          : %u\n\n"
-           "%s\n"
-           "\n",
-           ncib->header_block_number,
-           ncib->block_length,
-           ncib->center_column_of_rotation,
-           ncib->center_line_of_rotation,
-           ncib->rotational_correction,
-           ncib->number_of_corrections,
-           buffer);
-
-    free(buffer);
+    else
+    {
+        printf("Navigation Correction Information Block:\n\n"
+               "    Block number                   : %u\n"
+               "    Block length (bytes)           : %u\n"
+               "    Center column of rotation      : %f\n"
+               "    Center line of rotation        : %f\n"
+               "    Rotational correction (urad)   : %f\n"
+               "    Number of corrections          : %u\n\n"
+               "\n",
+               ncib->header_block_number,
+               ncib->block_length,
+               ncib->center_column_of_rotation,
+               ncib->center_line_of_rotation,
+               ncib->rotational_correction,
+               ncib->number_of_corrections);
+    }
 }
 
 
@@ -1182,34 +1246,48 @@ void read_observation_time_information_block(FILE*    fp,
 
 void print_observation_time_information_block(OTIB* otib)
 {
-    const uint32_t buffer_length = 256 * otib->number_of_observation_times;
-    char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
-    uint32_t       written_chars = 0;
-
-    for(uint32_t i = 0; i < otib->number_of_observation_times; ++i)
+    if(otib->number_of_observation_times > 0)
     {
-        written_chars += snprintf(buffer + written_chars,
-                                  buffer_length - written_chars,
-                                  "      Observation time %u:\n"
-                                  "        Line number              : %u\n"
-                                  "        Observation time (mjd)   : %f\n\n",
-                                  i + 1,
-                                  otib->observation_time_line_number[i],
-                                  otib->observation_time[i]);
+        const uint32_t buffer_length = 256 * otib->number_of_observation_times;
+        char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
+        uint32_t       written_chars = 0;
+
+        for(uint32_t i = 0; i < otib->number_of_observation_times; ++i)
+        {
+            written_chars += snprintf(buffer + written_chars,
+                                      buffer_length - written_chars,
+                                      "      Observation time %u:\n"
+                                      "        Line number              : %u\n"
+                                      "        Observation time (mjd)   : %f\n\n",
+                                      i + 1,
+                                      otib->observation_time_line_number[i],
+                                      otib->observation_time[i]);
+        }
+
+        printf("Observation Time Information Block:\n\n"
+               "    Block number                 : %u\n"
+               "    Block length (bytes)         : %u\n"
+               "    Number of observation times  : %u\n\n"
+               "%s\n"
+               "\n",
+               otib->header_block_number,
+               otib->block_length,
+               otib->number_of_observation_times,
+               buffer);
+
+        free(buffer);
     }
-
-    printf("Observation Time Information Block:\n\n"
-           "    Block number                 : %u\n"
-           "    Block length (bytes)         : %u\n"
-           "    Number of observation times  : %u\n\n"
-           "%s\n"
-           "\n",
-           otib->header_block_number,
-           otib->block_length,
-           otib->number_of_observation_times,
-           buffer);
-
-    free(buffer);
+    else
+    {
+        printf("Observation Time Information Block:\n\n"
+               "    Block number                 : %u\n"
+               "    Block length (bytes)         : %u\n"
+               "    Number of observation times  : %u\n\n"
+               "\n",
+               otib->header_block_number,
+               otib->block_length,
+               otib->number_of_observation_times);
+    }
 }
 
 
@@ -1308,34 +1386,49 @@ void read_error_information_block(FILE*    fp,
 
 void print_error_information_block(EIB* eib)
 {
-    const uint32_t buffer_length = 256 * eib->number_of_error_information_data;
-    char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
-    uint32_t       written_chars = 0;
-
-    for(uint32_t i = 0; i < eib->number_of_error_information_data; ++i)
+    if(eib->number_of_error_information_data > 0)
     {
-        written_chars += snprintf(buffer + written_chars,
-                                  buffer_length - written_chars,
-                                  "      Error %u:\n"
-                                  "        Line number                    : %u\n"
-                                  "        Number of error pixels on line : %u\n",
-                                  i + 1,
-                                  eib->error_line_number[i],
-                                  eib->error_pixels_for_line[i]);
+        const uint32_t buffer_length = 256 * eib->number_of_error_information_data;
+        char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
+        uint32_t       written_chars = 0;
+
+        for(uint32_t i = 0; i < eib->number_of_error_information_data; ++i)
+        {
+            written_chars += snprintf(buffer + written_chars,
+                                      buffer_length - written_chars,
+                                      "      Error %u:\n"
+                                      "        Line number                    : %u\n"
+                                      "        Number of error pixels on line : %u\n",
+                                      i + 1,
+                                      eib->error_line_number[i],
+                                      eib->error_pixels_for_line[i]);
+        }
+
+        printf("Error Information Block:\n\n"
+               "    Block number                 : %u\n"
+               "    Block length (bytes)         : %u\n"
+               "    Number of error information  : %u\n"
+               "%s\n"
+               "\n",
+               eib->header_block_number,
+               eib->block_length,
+               eib->number_of_error_information_data,
+               buffer);
+
+        free(buffer);
     }
+    else
+    {
+        printf("Error Information Block:\n\n"
+               "    Block number                 : %u\n"
+               "    Block length (bytes)         : %u\n"
+               "    Number of error information  : %u\n"
+               "\n",
+               eib->header_block_number,
+               eib->block_length,
+               eib->number_of_error_information_data);
 
-    printf("Error Information Block:\n\n"
-           "    Block number                 : %u\n"
-           "    Block length (bytes)         : %u\n"
-           "    Number of error information  : %u\n"
-           "%s\n"
-           "\n",
-           eib->header_block_number,
-           eib->block_length,
-           eib->number_of_error_information_data,
-           buffer);
-
-    free(buffer);
+    }
 }
 
 
