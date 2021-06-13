@@ -1059,7 +1059,7 @@ void print_navigation_correction_information_block(NCIB* ncib)
                                   "      Correction %u:\n"
                                   "        Line number after rotation : %u\n"
                                   "        Shift for column direction : %f\n"
-                                  "        Shift for line direction   : %f\n",
+                                  "        Shift for line direction   : %f\n\n",
                                   i + 1,
                                   ncib->line_number_after_rotation[i],
                                   ncib->shift_for_column_direction[i],
@@ -1067,12 +1067,12 @@ void print_navigation_correction_information_block(NCIB* ncib)
     }
 
     printf("Navigation Correction Information Block:\n\n"
-           "    Block number                 : %u\n"
-           "    Block length (bytes)         : %u\n"
-           "    Center column of rotation    : %f\n"
-           "    Center line of rotation      : %f\n"
-           "    Rotational correction (urad) : %f\n"
-           "    Number of corrections        : %u\n"
+           "    Block number                   : %u\n"
+           "    Block length (bytes)           : %u\n"
+           "    Center column of rotation      : %f\n"
+           "    Center line of rotation        : %f\n"
+           "    Rotational correction (urad)   : %f\n"
+           "    Number of corrections          : %u\n\n"
            "%s\n"
            "\n",
            ncib->header_block_number,
@@ -1191,8 +1191,8 @@ void print_observation_time_information_block(OTIB* otib)
         written_chars += snprintf(buffer + written_chars,
                                   buffer_length - written_chars,
                                   "      Observation time %u:\n"
-                                  "        Line number            : %u\n"
-                                  "        Observation time (mjd) : %f\n",
+                                  "        Line number              : %u\n"
+                                  "        Observation time (mjd)   : %f\n\n",
                                   i + 1,
                                   otib->observation_time_line_number[i],
                                   otib->observation_time[i]);
@@ -1201,7 +1201,7 @@ void print_observation_time_information_block(OTIB* otib)
     printf("Observation Time Information Block:\n\n"
            "    Block number                 : %u\n"
            "    Block length (bytes)         : %u\n"
-           "    Number of observation times  : %u\n"
+           "    Number of observation times  : %u\n\n"
            "%s\n"
            "\n",
            otib->header_block_number,
