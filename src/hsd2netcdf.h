@@ -370,10 +370,14 @@ void print_observation_time_information_block(OTIB* otib);
 
 
 
-EIB* allocate_error_information_block(bool allocate_data_p);
+EIB* allocate_error_information_block();
 void deallocate_error_information_block(EIB* eib);
-void read_error_information_block(FILE* fp, EIB* eib, bool fill_data_p, uint32_t header_offset);
+void read_error_information_block(FILE*    fp,
+                                  EIB*     eib,
+                                  uint32_t header_offset);
 void print_error_information_block(EIB* eib);
+
+
 
 SB* allocate_spare_block(bool allocate_data_p);
 void deallocate_spare_block(SB* sb);

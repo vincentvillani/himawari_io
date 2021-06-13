@@ -1214,20 +1214,10 @@ void print_observation_time_information_block(OTIB* otib)
 
 
 
-EIB* allocate_error_information_block(bool allocate_data_p)
+EIB* allocate_error_information_block()
 {
-    EIB* result    = (EIB*)calloc(1, sizeof(EIB));
-    result->data_p = NULL;
-    if(allocate_data_p)
-    {
-        // TODO
-        fprintf(stderr,
-                "%s:%s: Not currently supported\n",
-                __FILE__,
-                (char*)__LINE__);
-        exit(1);
-    }
-
+    EIB* result = (EIB*)calloc(1,
+                               sizeof(EIB));
     return result;
 }
 
@@ -1241,19 +1231,15 @@ void deallocate_error_information_block(EIB* eib)
     if(eib->error_pixels_for_line)
         free(eib->error_pixels_for_line);
 
-    if(eib->data_p)
-        free(eib->data_p);
-
     free(eib);
 }
 
 
 
-void read_error_information_block(FILE* fp, EIB* eib, bool fill_data_p, uint32_t header_offset)
+void read_error_information_block(FILE*    fp,
+                                  EIB*     eib,
+                                  uint32_t header_offset)
 {
-    bool     buffer_allocated = false;
-    uint8_t* buffer           = NULL;
-
     // Read the block number/id and block size
     uint8_t  block_number = 0;
     uint32_t block_length = 0;
@@ -1269,16 +1255,9 @@ void read_error_information_block(FILE* fp, EIB* eib, bool fill_data_p, uint32_t
           1,
           fp);
 
-    // Do we need to allocate a buffer?
-    if(fill_data_p)
-    {
-        buffer = eib->data_p;
-    }
-    else
-    {
-        buffer = (uint8_t*)calloc(1, block_length);
-        buffer_allocated = true;
-    }
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
 
     // Read in the whole block
     fseek(fp,
@@ -1322,8 +1301,7 @@ void read_error_information_block(FILE* fp, EIB* eib, bool fill_data_p, uint32_t
            buffer + buffer_offset,
            40);
 
-    if(buffer_allocated)
-        free(buffer);
+    free(buffer);
 }
 
 
@@ -1515,7 +1493,7 @@ HSD* allocate_hsd(bool allocate_data_p)
     result->sib  = allocate_segment_information_block();
     result->ncib = allocate_navigation_correction_information_block();
     result->otib = allocate_observation_time_information_block();
-    result->eib  = allocate_error_information_block(allocate_data_p);
+    result->eib  = allocate_error_information_block();
     result->sb   = allocate_spare_block(allocate_data_p);
     result->db   = allocate_data_block();
 
@@ -1586,7 +1564,6 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
     
     read_error_information_block(fp,
                                  hsd->eib,
-                                 fill_data_p,
                                  block_offset);
     block_offset += hsd->eib->block_length;
 
