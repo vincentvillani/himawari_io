@@ -352,10 +352,14 @@ void print_segment_information_block(SIB* sib);
 
 
 
-NCIB* allocate_navigation_correction_information_block(bool allocate_data_p);
+NCIB* allocate_navigation_correction_information_block();
 void deallocate_navigation_correction_information_block(NCIB* ncib);
-void read_navigation_correction_information_block(FILE* fp, NCIB* ncib, bool fill_data_p, uint32_t header_offset);
+void read_navigation_correction_information_block(FILE*    fp,
+                                                  NCIB*    ncib,
+                                                  uint32_t header_offset);
 void print_navigation_correction_information_block(NCIB* ncib);
+
+
 
 OTIB* allocate_observation_time_information_block(bool allocate_data_p);
 void deallocate_observation_time_information_block(OTIB* otib);
