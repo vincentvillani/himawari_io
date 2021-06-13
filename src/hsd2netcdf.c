@@ -1672,6 +1672,55 @@ void print_spare_block(SB* sb)
 
 
 
+DB* allocate_data_block()
+{
+    DB* result = (DB*)calloc(1, sizeof(DB));
+
+    return result;
+}
+
+
+
+void deallocate_data_block(DB* db)
+{
+    if(db->data)
+        free(db->data);
+    free(db);
+}
+
+
+
+void read_data_block(FILE* fp, DB* db, uint32_t header_offset, uint32_t length)
+{
+    db->data   = (uint16_t*)malloc(sizeof(uint16_t) * length);
+    db->length = length;
+
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(db->data,
+          sizeof(uint16_t) * db->length,
+          1,
+          fp);
+}
+
+
+
+void print_data_block(DB* db)
+{
+    printf("Data Block:\n\n"
+           "    Block number                 : 12\n"
+           "    Block length (bytes)         : %lu\n"
+           "\n",
+           sizeof(uint16_t) * db->length);
+}
+
+
+
+
+
+
+
 HSD* allocate_hsd(bool allocate_data_p)
 {
     HSD* result = (HSD*)calloc(1, sizeof(HSD));
@@ -1687,6 +1736,7 @@ HSD* allocate_hsd(bool allocate_data_p)
     result->otib = allocate_observation_time_information_block(allocate_data_p);
     result->eib  = allocate_error_information_block(allocate_data_p);
     result->sb   = allocate_spare_block(allocate_data_p);
+    result->db   = allocate_data_block();
 
     return result;
 }
@@ -1773,6 +1823,11 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
                      fill_data_p,
                      block_offset);
     block_offset += hsd->sb->block_length;
+
+    read_data_block(fp,
+                    hsd->db,
+                    block_offset,
+                    hsd->dib->number_of_columns * hsd->dib->number_of_rows);
 
     fclose(fp);
 }

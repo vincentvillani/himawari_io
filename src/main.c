@@ -33,6 +33,7 @@ int main(int argc, char** argv)
     print_observation_time_information_block(hsd->otib);
     print_error_information_block(hsd->eib);
     print_spare_block(hsd->sb);
+    print_data_block(hsd->db);
 
     // TODO: Free structs
 

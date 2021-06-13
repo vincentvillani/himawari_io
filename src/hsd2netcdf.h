@@ -262,6 +262,17 @@ typedef struct SB
 
 }SB;
 
+
+
+// Data block
+typedef struct DB
+{
+    uint16_t* data; 
+    uint32_t  length; // Length = DIB->number_of_columns * DIB->number_of_rows  
+}DB;
+
+
+
 // A whole HSD file
 typedef struct HSD
 {
@@ -276,6 +287,7 @@ typedef struct HSD
     OTIB* otib;
     EIB*  eib;
     SB*   sb;
+    DB*   db;
 }HSD;
 
 
@@ -334,6 +346,11 @@ SB* allocate_spare_block(bool allocate_data_p);
 void deallocate_spare_block(SB* sb);
 void read_spare_block(FILE* fp, SB* sb, bool fill_data_p, uint32_t header_offset);
 void print_spare_block(SB* sb);
+
+DB* allocate_data_block();
+void deallocate_data_block(DB* db);
+void read_data_block(FILE* fp, DB* db, uint32_t header_offset, uint32_t length);
+void print_data_block(DB* db);
 
 
 HSD* allocate_hsd(bool allocate_data_p);
