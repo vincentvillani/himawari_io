@@ -343,10 +343,14 @@ void print_inter_calibration_information_block(IIB* iib);
 
 
 
-SIB* allocate_segment_information_block(bool allocate_data_p);
+SIB* allocate_segment_information_block();
 void deallocate_segment_information_block(SIB* sib);
-void read_segment_information_block(FILE* fp, SIB* sib, bool fill_data_p, uint32_t header_offset);
+void read_segment_information_block(FILE*    fp,
+                                    SIB*     sib,
+                                    uint32_t header_offset);
 void print_segment_information_block(SIB* sib);
+
+
 
 NCIB* allocate_navigation_correction_information_block(bool allocate_data_p);
 void deallocate_navigation_correction_information_block(NCIB* ncib);

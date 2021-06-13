@@ -847,20 +847,10 @@ void print_inter_calibration_information_block(IIB* iib)
 
 
 
-SIB* allocate_segment_information_block(bool allocate_data_p)
+SIB* allocate_segment_information_block()
 {
-    SIB* result    = (SIB*)calloc(1, sizeof(SIB));
-    result->data_p = NULL;
-    if(allocate_data_p)
-    {
-        // TODO
-        fprintf(stderr,
-                "%s:%s: Not currently supported\n",
-                __FILE__,
-                (char*)__LINE__);
-        exit(1);
-    }
-
+    SIB* result = (SIB*)calloc(1,
+                               sizeof(SIB));
     return result;
 }
 
@@ -868,18 +858,15 @@ SIB* allocate_segment_information_block(bool allocate_data_p)
 
 void deallocate_segment_information_block(SIB* sib)
 {
-    if(sib->data_p)
-        free(sib->data_p);
     free(sib);
 }
 
 
 
-void read_segment_information_block(FILE* fp, SIB* sib, bool fill_data_p, uint32_t header_offset)
+void read_segment_information_block(FILE*    fp,
+                                    SIB*     sib,
+                                    uint32_t header_offset)
 {
-    bool     buffer_allocated = false;
-    uint8_t* buffer           = NULL;
-
     // Read the block number/id and block size
     uint8_t  block_number = 0;
     uint16_t block_length = 0;
@@ -895,16 +882,9 @@ void read_segment_information_block(FILE* fp, SIB* sib, bool fill_data_p, uint32
           1,
           fp);
 
-    // Do we need to allocate a buffer?
-    if(fill_data_p)
-    {
-        buffer = sib->data_p;
-    }
-    else
-    {
-        buffer = (uint8_t*)calloc(1, block_length);
-        buffer_allocated = true;
-    }
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
 
     // Read in the whole block
     fseek(fp,
@@ -930,16 +910,13 @@ void read_segment_information_block(FILE* fp, SIB* sib, bool fill_data_p, uint32
            buffer + 7,
            40);
 
-    if(buffer_allocated)
-        free(buffer);
-
+    free(buffer);
 }
 
 
 
 void print_segment_information_block(SIB* sib)
 {
-
     printf("Segment Information Block:\n\n"
            "    Block number                 : %u\n"
            "    Block length (bytes)         : %u\n"
@@ -1580,7 +1557,7 @@ HSD* allocate_hsd(bool allocate_data_p)
     result->nib  = allocate_navigation_information_block();
     result->cib  = allocate_calibration_information_block();
     result->iib  = allocate_inter_calibration_information_block();
-    result->sib  = allocate_segment_information_block(allocate_data_p);
+    result->sib  = allocate_segment_information_block();
     result->ncib = allocate_navigation_correction_information_block(allocate_data_p);
     result->otib = allocate_observation_time_information_block(allocate_data_p);
     result->eib  = allocate_error_information_block(allocate_data_p);
@@ -1639,7 +1616,6 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
     
     read_segment_information_block(fp,
                                    hsd->sib,
-                                   fill_data_p,
                                    block_offset);
     block_offset += hsd->sib->block_length;
 
