@@ -316,10 +316,14 @@ void print_projection_information_block(PIB* pib);
 
 
 
-NIB* allocate_navigation_information_block(bool allocate_data_p);
+NIB* allocate_navigation_information_block();
 void deallocate_navigation_information_block(NIB* nib);
-void read_navigation_information_block(FILE* fp, NIB* nib, bool fill_data_p, uint32_t header_offset);
+void read_navigation_information_block(FILE*    fp,
+                                       NIB*     nib,
+                                       uint32_t header_offset);
 void print_navigation_information_block(NIB* nib);
+
+
 
 CIB* allocate_calibration_information_block(bool allocate_data_p);
 void deallocate_calibration_information_block(CIB* cib);

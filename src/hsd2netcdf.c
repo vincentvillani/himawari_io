@@ -260,8 +260,8 @@ void print_data_information_block(DIB* dib)
 
 PIB* allocate_projection_information_block()
 {
-    PIB* result    = (PIB*)calloc(1,
-                                  sizeof(PIB));
+    PIB* result = (PIB*)calloc(1,
+                               sizeof(PIB));
     return result;
 }
 
@@ -399,21 +399,10 @@ void print_projection_information_block(PIB* pib)
 
 
 
-NIB* allocate_navigation_information_block(bool allocate_data_p)
+NIB* allocate_navigation_information_block()
 {
-    NIB* result    = (NIB*)calloc(1, sizeof(NIB));
-    result->data_p = NULL;
-
-    if(allocate_data_p)
-    {
-        // TODO
-        fprintf(stderr,
-                "%s:%s: Not currently supported\n",
-                __FILE__,
-                (char*)__LINE__);
-        exit(1);
-    }
-
+    NIB* result = (NIB*)calloc(1,
+                               sizeof(NIB));
     return result;
 }
 
@@ -421,18 +410,15 @@ NIB* allocate_navigation_information_block(bool allocate_data_p)
 
 void deallocate_navigation_information_block(NIB* nib)
 {
-    if(nib->data_p)
-        free(nib->data_p);
     free(nib);
 }
 
 
 
-void read_navigation_information_block(FILE* fp, NIB* nib, bool fill_data_p, uint32_t header_offset)
+void read_navigation_information_block(FILE*    fp,
+                                       NIB*     nib, 
+                                       uint32_t header_offset)
 {
-    bool     buffer_allocated = false;
-    uint8_t* buffer           = NULL;
-
     // Read the block number/id and block size
     uint8_t  block_number = 0;
     uint16_t block_length = 0;
@@ -448,16 +434,9 @@ void read_navigation_information_block(FILE* fp, NIB* nib, bool fill_data_p, uin
           1,
           fp);
 
-    // Do we need to allocate a buffer?
-    if(fill_data_p)
-    {
-        buffer = nib->data_p;
-    }
-    else
-    {
-        buffer = (uint8_t*)calloc(1, block_length);
-        buffer_allocated = true;
-    }
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
 
     // Read in the whole block
     fseek(fp,
@@ -510,16 +489,14 @@ void read_navigation_information_block(FILE* fp, NIB* nib, bool fill_data_p, uin
            buffer + 99,
            40);
 
-    if(buffer_allocated)
-        free(buffer);
-
+    free(buffer);
 }
 
 
 
 void print_navigation_information_block(NIB* nib)
 {
-    printf("Projection Information Block:\n\n"
+    printf("Navigation Information Block:\n\n"
            "    Block number                   : %u\n"
            "    Block length (bytes)           : %u\n"
            "    Navigation information time    : %f\n"
@@ -1648,7 +1625,7 @@ HSD* allocate_hsd(bool allocate_data_p)
     result->bib  = allocate_basic_information_block();
     result->dib  = allocate_data_information_block();
     result->pib  = allocate_projection_information_block();
-    result->nib  = allocate_navigation_information_block(allocate_data_p);
+    result->nib  = allocate_navigation_information_block();
     result->cib  = allocate_calibration_information_block(allocate_data_p);
     result->iib  = allocate_inter_calibration_information_block(allocate_data_p);
     result->sib  = allocate_segment_information_block(allocate_data_p);
@@ -1695,7 +1672,6 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
 
     read_navigation_information_block(fp,
                                       hsd->nib,
-                                      fill_data_p,
                                       block_offset);
     block_offset += hsd->nib->block_length;
 
