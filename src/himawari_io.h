@@ -157,7 +157,8 @@ typedef struct IIB
     float    gsics_radiance_validity_upper_limit;
     float    gsics_radiance_validity_lower_limit;
     char     gsics_correction_filename[128];
-    uint8_t  spare[56];
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }IIB;
 
 

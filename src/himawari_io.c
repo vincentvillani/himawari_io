@@ -919,6 +919,8 @@ IIB* allocate_inter_calibration_information_block()
 
 void deallocate_inter_calibration_information_block(IIB* iib)
 {
+    if(iib->spare)
+        free(iib->spare);
     free(iib);
 }
 
@@ -959,42 +961,67 @@ void read_inter_calibration_information_block(FILE*    fp,
     iib->header_block_number = block_number;
     iib->block_length        = block_length;
     
+    uint32_t buffer_offset = 3;
     memcpy(&(iib->gsics_calibration_intercept),
-           buffer + 3,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(iib->gsics_calibration_slope),
-           buffer + 11,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(iib->gsics_calibration_quadratic),
-           buffer + 19,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(iib->radiance_bias),
-           buffer + 27,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(iib->radiance_bias_uncertainty),
-           buffer + 35,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(iib->radiance),
-           buffer + 43,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(iib->gsics_calibration_validity_start),
-           buffer + 51,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(iib->gsics_calibration_validity_end),
-           buffer + 59,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(iib->gsics_radiance_validity_upper_limit),
-           buffer + 67,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(iib->gsics_radiance_validity_lower_limit),
-           buffer + 71,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(iib->gsics_correction_filename),
-           buffer + 75,
+           buffer + buffer_offset,
            128);
-    memcpy(&(iib->spare),
-           buffer + 203,
-           56);
+    buffer_offset += 128;
+
+    iib->spare_length = iib->block_length - buffer_offset;
+    iib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * iib->spare_length);
+    memcpy(iib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * iib->spare_length);
 
     free(buffer);
 }
@@ -1017,6 +1044,7 @@ void print_inter_calibration_information_block(IIB* iib)
            "    GSICS calibration validity upper limit      : %f\n"
            "    GSICS calibration validity lower limit      : %f\n"
            "    GSICS calibration correction filename       : %s\n"
+           "    Spare length (bytes)                        : %lu\n"
            "\n",
            iib->header_block_number,
            iib->block_length,
@@ -1030,7 +1058,8 @@ void print_inter_calibration_information_block(IIB* iib)
            iib->gsics_calibration_validity_end,
            iib->gsics_radiance_validity_upper_limit,
            iib->gsics_radiance_validity_lower_limit,
-           iib->gsics_correction_filename);
+           iib->gsics_correction_filename,
+           sizeof(uint8_t) * iib->spare_length);
 }
 
 
