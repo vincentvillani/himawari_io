@@ -401,7 +401,7 @@ void print_data_block(DB* db);
 HSD* allocate_hsd();
 void read_file(const char* filepath,
                HSD*        hsd);
-
+void deallocate_hsd(HSD* hsd);
 
 
 #endif

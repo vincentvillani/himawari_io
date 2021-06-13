@@ -1564,3 +1564,22 @@ void read_file(const char* filepath,
 
 
 
+void deallocate_hsd(HSD* hsd)
+{
+    deallocate_basic_information_block(hsd->bib);
+    deallocate_data_information_block(hsd->dib);
+    deallocate_projection_information_block(hsd->pib);
+    deallocate_navigation_information_block(hsd->nib);
+    deallocate_calibration_information_block(hsd->cib);
+    deallocate_inter_calibration_information_block(hsd->iib);
+    deallocate_segment_information_block(hsd->sib);
+    deallocate_navigation_correction_information_block(hsd->ncib);
+    deallocate_observation_time_information_block(hsd->otib);
+    deallocate_error_information_block(hsd->eib);
+    deallocate_spare_block(hsd->sb);
+    deallocate_data_block(hsd->db);
+    free(hsd);
+}
+
+
+

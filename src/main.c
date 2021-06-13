@@ -10,6 +10,7 @@
 // Read in HSD, then write out that HSD again. Should be byte to byte identical
 int main(int argc, char** argv)
 {
+    // Allocate
     HSD* hsd = allocate_hsd();
 
     /*
@@ -33,7 +34,8 @@ int main(int argc, char** argv)
     print_spare_block(hsd->sb);
     print_data_block(hsd->db);
 
-    // TODO: Free structs
+    // Deallocate
+    deallocate_hsd(hsd);
 
     return 0;
 }
