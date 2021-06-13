@@ -325,10 +325,14 @@ void print_navigation_information_block(NIB* nib);
 
 
 
-CIB* allocate_calibration_information_block(bool allocate_data_p);
+CIB* allocate_calibration_information_block();
 void deallocate_calibration_information_block(CIB* cib);
-void read_calibration_information_block(FILE* fp, CIB* cib, bool fill_data_p, uint32_t header_offset);
+void read_calibration_information_block(FILE*    fp,
+                                        CIB*     cib,
+                                        uint32_t header_offset);
 void print_calibration_information_block(CIB* cib);
+
+
 
 IIB* allocate_inter_calibration_information_block(bool allocate_data_p);
 void deallocate_inter_calibration_information_block(IIB* iib);
