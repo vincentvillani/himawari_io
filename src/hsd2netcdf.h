@@ -34,9 +34,6 @@ typedef struct BIB
     char     file_format_version[32];
     char     filename[32];
     uint8_t  spare[40];
-
-    uint8_t* data_p;
-    uint64_t data_length;
 }BIB;
 
 
@@ -292,10 +289,13 @@ typedef struct HSD
 
 
 
-BIB* allocate_basic_information_block(bool allocate_data_p);
+BIB* allocate_basic_information_block();
 void deallocate_basic_information_block(BIB* bib);
-void read_basic_information_block(FILE* fp, BIB* bib, bool fill_data_p, uint32_t header_offset);
+void read_basic_information_block(FILE*    fp,
+                                  BIB*     bib,
+                                  uint32_t header_offset);
 void print_basic_information_block(BIB* bib);
+
 
 DIB* allocate_data_information_block(bool allocate_data_p);
 void deallocate_data_information_block(DIB* dib);
