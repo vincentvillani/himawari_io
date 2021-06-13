@@ -1088,22 +1088,11 @@ void print_navigation_correction_information_block(NCIB* ncib)
 
 
 
-OTIB* allocate_observation_time_information_block(bool allocate_data_p)
+OTIB* allocate_observation_time_information_block()
 {
-    OTIB* result    = (OTIB*)calloc(1, sizeof(OTIB));
-    result->data_p = NULL;
-    if(allocate_data_p)
-    {
-        // TODO
-        fprintf(stderr,
-                "%s:%s: Not currently supported\n",
-                __FILE__,
-                (char*)__LINE__);
-        exit(1);
-    }
-
+    OTIB* result = (OTIB*)calloc(1,
+                                 sizeof(OTIB));
     return result;
-
 }
 
 
@@ -1116,19 +1105,15 @@ void deallocate_observation_time_information_block(OTIB* otib)
     if(otib->observation_time)
         free(otib->observation_time);
 
-    if(otib->data_p)
-        free(otib->data_p);
-
     free(otib);
 }
 
 
 
-void read_observation_time_information_block(FILE* fp, OTIB* otib, bool fill_data_p, uint32_t header_offset)
+void read_observation_time_information_block(FILE*    fp,
+                                             OTIB*    otib,
+                                             uint32_t header_offset)
 {
-    bool     buffer_allocated = false;
-    uint8_t* buffer           = NULL;
-
     // Read the block number/id and block size
     uint8_t  block_number = 0;
     uint16_t block_length = 0;
@@ -1144,16 +1129,9 @@ void read_observation_time_information_block(FILE* fp, OTIB* otib, bool fill_dat
           1,
           fp);
 
-    // Do we need to allocate a buffer?
-    if(fill_data_p)
-    {
-        buffer = otib->data_p;
-    }
-    else
-    {
-        buffer = (uint8_t*)calloc(1, block_length);
-        buffer_allocated = true;
-    }
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
 
     // Read in the whole block
     fseek(fp,
@@ -1197,8 +1175,7 @@ void read_observation_time_information_block(FILE* fp, OTIB* otib, bool fill_dat
            buffer + buffer_offset,
            40);
 
-    if(buffer_allocated)
-        free(buffer);
+    free(buffer);
 }
 
 
@@ -1537,7 +1514,7 @@ HSD* allocate_hsd(bool allocate_data_p)
     result->iib  = allocate_inter_calibration_information_block();
     result->sib  = allocate_segment_information_block();
     result->ncib = allocate_navigation_correction_information_block();
-    result->otib = allocate_observation_time_information_block(allocate_data_p);
+    result->otib = allocate_observation_time_information_block();
     result->eib  = allocate_error_information_block(allocate_data_p);
     result->sb   = allocate_spare_block(allocate_data_p);
     result->db   = allocate_data_block();
@@ -1604,7 +1581,6 @@ void read_file(const char* filepath, HSD* hsd, bool fill_data_p)
 
     read_observation_time_information_block(fp,
                                             hsd->otib,
-                                            fill_data_p,
                                             block_offset);
     block_offset += hsd->otib->block_length;
     

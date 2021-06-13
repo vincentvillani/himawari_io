@@ -361,10 +361,14 @@ void print_navigation_correction_information_block(NCIB* ncib);
 
 
 
-OTIB* allocate_observation_time_information_block(bool allocate_data_p);
+OTIB* allocate_observation_time_information_block();
 void deallocate_observation_time_information_block(OTIB* otib);
-void read_observation_time_information_block(FILE* fp, OTIB* otib, bool fill_data_p, uint32_t header_offset);
+void read_observation_time_information_block(FILE*    fp,
+                                             OTIB*    otib,
+                                             uint32_t header_offset);
 void print_observation_time_information_block(OTIB* otib);
+
+
 
 EIB* allocate_error_information_block(bool allocate_data_p);
 void deallocate_error_information_block(EIB* eib);
