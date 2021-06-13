@@ -1667,6 +1667,8 @@ SB* allocate_spare_block()
 
 void deallocate_spare_block(SB* sb)
 {
+    if(sb->spare)
+        free(sb->spare);
     free(sb);
 }
 
@@ -1678,7 +1680,7 @@ void read_spare_block(FILE*    fp,
 {
     // Read the block number/id and block size
     uint8_t  block_number = 0;
-    uint32_t block_length = 0;
+    uint16_t block_length = 0;
     fseek(fp,
           header_offset,
           SEEK_SET);
@@ -1687,7 +1689,7 @@ void read_spare_block(FILE*    fp,
           1,
           fp);
     fread(&block_length,
-          sizeof(uint32_t),
+          sizeof(uint16_t),
           1,
           fp);
 
@@ -1707,9 +1709,12 @@ void read_spare_block(FILE*    fp,
     sb->header_block_number = block_number;
     sb->block_length        = block_length;
 
-    memcpy(&(sb->spare),
-           buffer + 3,
-           256);
+    uint32_t buffer_offset = 3;
+    sb->spare_length       = sb->block_length - buffer_offset;
+    sb->spare              = (uint8_t*)malloc(sizeof(uint8_t) * sb->spare_length);
+    memcpy(sb->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * sb->spare_length);
 
     free(buffer);
 }
@@ -1719,11 +1724,13 @@ void read_spare_block(FILE*    fp,
 void print_spare_block(SB* sb)
 {
     printf("Spare Block:\n\n"
-           "    Block number                 : %u\n"
-           "    Block length (bytes)         : %u\n"
+           "    Block number         : %u\n"
+           "    Block length (bytes) : %u\n"
+           "    Spare length (bytes) : %lu\n"
            "\n",
            sb->header_block_number,
-           sb->block_length);
+           sb->block_length,
+           sizeof(uint8_t) * sb->spare_length);
 }
 
 

@@ -227,9 +227,10 @@ typedef struct EIB
 typedef struct SB
 {
 
-    uint8_t  header_block_number; // 11 (fixed value)
-    uint16_t block_length;        // 259 bytes (fixed value)
-    uint8_t  spare[256];
+    uint8_t   header_block_number; // 11 (fixed value)
+    uint16_t  block_length;        // 259 bytes (fixed value)
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }SB;
 
 
