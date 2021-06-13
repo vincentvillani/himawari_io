@@ -1775,8 +1775,8 @@ void read_data_block(FILE*    fp,
 void print_data_block(DB* db)
 {
     printf("Data Block:\n\n"
-           "    Block number                 : 12\n"
-           "    Block length (bytes)         : %lu\n"
+           "    Block number         : 12\n"
+           "    Block length (bytes) : %lu\n"
            "\n",
            sizeof(uint16_t) * db->length);
 }
