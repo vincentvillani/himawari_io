@@ -1466,19 +1466,19 @@ void print_observation_time_information_block(OTIB* otib)
             written_chars += snprintf(buffer + written_chars,
                                       buffer_length - written_chars,
                                       "      Observation time %u:\n"
-                                      "        Line number              : %u\n"
-                                      "        Observation time (mjd)   : %f\n\n",
+                                      "        Line number             : %u\n"
+                                      "        Observation time (mjd)  : %f\n\n",
                                       i + 1,
                                       otib->observation_time_line_number[i],
                                       otib->observation_time[i]);
         }
 
         printf("Observation Time Information Block:\n\n"
-               "    Block number                 : %u\n"
-               "    Block length (bytes)         : %u\n"
-               "    Number of observation times  : %u\n\n"
+               "    Block number                : %u\n"
+               "    Block length (bytes)        : %u\n"
+               "    Number of observation times : %u\n\n"
                "%s\n"
-               "    Spare length (bytes)         : %lu\n"
+               "    Spare length (bytes)        : %lu\n"
                "\n",
                otib->header_block_number,
                otib->block_length,
@@ -1491,10 +1491,10 @@ void print_observation_time_information_block(OTIB* otib)
     else
     {
         printf("Observation Time Information Block:\n\n"
-               "    Block number                 : %u\n"
-               "    Block length (bytes)         : %u\n"
-               "    Number of observation times  : %u\n\n"
-               "    Spare length (bytes)         : %lu\n"
+               "    Block number                : %u\n"
+               "    Block length (bytes)        : %u\n"
+               "    Number of observation times : %u\n\n"
+               "    Spare length (bytes)        : %lu\n"
                "\n",
                otib->header_block_number,
                otib->block_length,
@@ -1624,11 +1624,11 @@ void print_error_information_block(EIB* eib)
         }
 
         printf("Error Information Block:\n\n"
-               "    Block number                 : %u\n"
-               "    Block length (bytes)         : %u\n"
-               "    Number of error information  : %u\n"
+               "    Block number                : %u\n"
+               "    Block length (bytes)        : %u\n"
+               "    Number of error information : %u\n"
                "%s\n"
-               "    Spare length (bytes)         : %lu\n"
+               "    Spare length (bytes)        : %lu\n"
                "\n",
                eib->header_block_number,
                eib->block_length,
@@ -1641,10 +1641,10 @@ void print_error_information_block(EIB* eib)
     else
     {
         printf("Error Information Block:\n\n"
-               "    Block number                 : %u\n"
-               "    Block length (bytes)         : %u\n"
-               "    Number of error information  : %u\n"
-               "    Spare length (bytes)         : %lu\n"
+               "    Block number                : %u\n"
+               "    Block length (bytes)        : %u\n"
+               "    Number of error information : %u\n"
+               "    Spare length (bytes)        : %lu\n"
                "\n",
                eib->header_block_number,
                eib->block_length,
