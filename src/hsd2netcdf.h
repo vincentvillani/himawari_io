@@ -246,6 +246,22 @@ typedef struct EIB
 
 }EIB;
 
+
+
+// Spare block
+typedef struct SB
+{
+
+    uint8_t  header_block_number;       // 11 (fixed value)
+    uint16_t block_length;              // 259 bytes (fixed value)
+
+    uint8_t spare[256];
+
+    uint8_t* data_p;
+    uint64_t data_length;
+
+}SB;
+
 // A whole HSD file
 typedef struct HSD
 {
@@ -259,6 +275,7 @@ typedef struct HSD
     NCIB* ncib;
     OTIB* otib;
     EIB*  eib;
+    SB*   sb;
 }HSD;
 
 
@@ -313,6 +330,10 @@ void deallocate_error_information_block(EIB* eib);
 void read_error_information_block(FILE* fp, EIB* eib, bool fill_data_p, uint32_t header_offset);
 void print_error_information_block(EIB* eib);
 
+SB* allocate_spare_block(bool allocate_data_p);
+void deallocate_spare_block(SB* sb);
+void read_spare_block(FILE* fp, SB* sb, bool fill_data_p, uint32_t header_offset);
+void print_spare_block(SB* sb);
 
 
 HSD* allocate_hsd(bool allocate_data_p);
