@@ -506,6 +506,8 @@ NIB* allocate_navigation_information_block()
 
 void deallocate_navigation_information_block(NIB* nib)
 {
+    if(nib->spare)
+        free(nib->spare);
     free(nib);
 }
 
@@ -545,45 +547,73 @@ void read_navigation_information_block(FILE*    fp,
 
     nib->header_block_number = block_number;
     nib->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
     memcpy(&(nib->navigation_information_time),
-           buffer + 3,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->ssp_longitude),
-           buffer + 11,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->ssp_latitude),
-           buffer + 19,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->earth_center_to_satellite),
-           buffer + 27,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->nadir_longitude),
-           buffer + 35,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->nadir_latitude),
-           buffer + 43,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->sun_position_x),
-           buffer + 51,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->sun_position_y),
-           buffer + 59,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->sun_position_z),
-           buffer + 67,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->moon_position_x),
-           buffer + 75,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->moon_position_y),
-           buffer + 83,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(nib->moon_position_z),
-           buffer + 91,
+           buffer + buffer_offset,
            8);
-    memcpy(&(nib->spare),
-           buffer + 99,
-           40);
+    buffer_offset += 8;
+
+    nib->spare_length = nib->block_length - buffer_offset;
+    nib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * nib->spare_length);
+    memcpy(nib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * nib->spare_length);
 
     free(buffer);
 }
@@ -603,6 +633,7 @@ void print_navigation_information_block(NIB* nib)
            "    Nadir latitude                 : %f\n"
            "    Sun's Position (x,y,z)(J2000)  : %f, %f, %f\n"
            "    Moon's Position (x,y,z)(J2000) : %f, %f, %f\n"
+           "    Spare length (bytes)           : %lu\n"
            "\n",
            nib->header_block_number,
            nib->block_length,
@@ -617,7 +648,8 @@ void print_navigation_information_block(NIB* nib)
            nib->sun_position_z,
            nib->moon_position_x,
            nib->moon_position_y,
-           nib->moon_position_z);
+           nib->moon_position_z,
+           sizeof(uint8_t) * nib->spare_length);
 }
 
 

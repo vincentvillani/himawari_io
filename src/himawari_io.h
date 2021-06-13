@@ -89,21 +89,22 @@ typedef struct PIB
 // Navigation information block
 typedef struct NIB
 {
-    uint8_t  header_block_number;         // 4 (fixed value)
-    uint16_t block_length;                // 139 bytes (fixed value)
-    double   navigation_information_time; // mjd
-    double   ssp_longitude;               // sub-satellite point longitude (degrees)
-    double   ssp_latitude;                // sub-satellite point latitude (degrees)
-    double   earth_center_to_satellite;   // Distance from earth's centre to the satellite (km)
-    double   nadir_longitude;             // Degrees
-    double   nadir_latitude;              // Degrees
-    double   sun_position_x;              // km (x, y, z) (J2000 inertial coordinate)
-    double   sun_position_y;              
-    double   sun_position_z;              
-    double   moon_position_x;             // km (x, y, z) (J2000 inertial coordinate)
-    double   moon_position_y;             
-    double   moon_position_z;             
-    uint8_t  spare[40];
+    uint8_t   header_block_number;         // 4 (fixed value)
+    uint16_t  block_length;                // 139 bytes (fixed value)
+    double    navigation_information_time; // mjd
+    double    ssp_longitude;               // sub-satellite point longitude (degrees)
+    double    ssp_latitude;                // sub-satellite point latitude (degrees)
+    double    earth_center_to_satellite;   // Distance from earth's centre to the satellite (km)
+    double    nadir_longitude;             // Degrees
+    double    nadir_latitude;              // Degrees
+    double    sun_position_x;              // km (x, y, z) (J2000 inertial coordinate)
+    double    sun_position_y;              
+    double    sun_position_z;              
+    double    moon_position_x;             // km (x, y, z) (J2000 inertial coordinate)
+    double    moon_position_y;             
+    double    moon_position_z;             
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }NIB;
 
 
