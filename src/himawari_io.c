@@ -1564,6 +1564,14 @@ void read_file(const char* filepath,
 
 
 
+void write_file(const char* filepath,
+                HSD*        hsd)
+{
+
+}
+
+
+
 void deallocate_hsd(HSD* hsd)
 {
     deallocate_basic_information_block(hsd->bib);
@@ -1579,6 +1587,24 @@ void deallocate_hsd(HSD* hsd)
     deallocate_spare_block(hsd->sb);
     deallocate_data_block(hsd->db);
     free(hsd);
+}
+
+
+
+void print_header(HSD* hsd)
+{
+    print_basic_information_block(hsd->bib);
+    print_data_information_block(hsd->dib);
+    print_projection_information_block(hsd->pib);
+    print_navigation_information_block(hsd->nib);
+    print_calibration_information_block(hsd->cib);
+    print_inter_calibration_information_block(hsd->iib);
+    print_segment_information_block(hsd->sib);
+    print_navigation_correction_information_block(hsd->ncib);
+    print_observation_time_information_block(hsd->otib);
+    print_error_information_block(hsd->eib);
+    print_spare_block(hsd->sb);
+    print_data_block(hsd->db);
 }
 
 

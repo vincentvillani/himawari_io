@@ -2,5 +2,7 @@
 *.o
 test_data/
 bin/hsd2nc4
+bin/himawari_io
 *.swp
 *.swo
+
