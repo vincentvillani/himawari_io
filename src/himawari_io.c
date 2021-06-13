@@ -1371,6 +1371,9 @@ void deallocate_observation_time_information_block(OTIB* otib)
     if(otib->observation_time)
         free(otib->observation_time);
 
+    if(otib->spare)
+        free(otib->spare);
+
     free(otib);
 }
 
@@ -1411,11 +1414,13 @@ void read_observation_time_information_block(FILE*    fp,
     otib->header_block_number = block_number;
     otib->block_length        = block_length;
     
-    memcpy(&(otib->number_of_observation_times),
-           buffer + 3,
-           2);
+    uint32_t buffer_offset = 3;
 
-    uint32_t buffer_offset = 5;
+    memcpy(&(otib->number_of_observation_times),
+           buffer + buffer_offset,
+           2);
+    buffer_offset += 2;
+
     if(otib->number_of_observation_times > 0)
     {
         otib->observation_time_line_number = 
@@ -1437,9 +1442,11 @@ void read_observation_time_information_block(FILE*    fp,
         }
     }
 
-    memcpy(&(otib->spare),
+    otib->spare_length = otib->block_length - buffer_offset;
+    otib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * otib->spare_length);
+    memcpy(otib->spare,
            buffer + buffer_offset,
-           40);
+           sizeof(uint8_t) * otib->spare_length);
 
     free(buffer);
 }
@@ -1471,11 +1478,13 @@ void print_observation_time_information_block(OTIB* otib)
                "    Block length (bytes)         : %u\n"
                "    Number of observation times  : %u\n\n"
                "%s\n"
+               "    Spare length (bytes)         : %lu\n"
                "\n",
                otib->header_block_number,
                otib->block_length,
                otib->number_of_observation_times,
-               buffer);
+               buffer,
+               sizeof(uint8_t) * otib->spare_length);
 
         free(buffer);
     }
@@ -1485,10 +1494,12 @@ void print_observation_time_information_block(OTIB* otib)
                "    Block number                 : %u\n"
                "    Block length (bytes)         : %u\n"
                "    Number of observation times  : %u\n\n"
+               "    Spare length (bytes)         : %lu\n"
                "\n",
                otib->header_block_number,
                otib->block_length,
-               otib->number_of_observation_times);
+               otib->number_of_observation_times,
+               sizeof(uint8_t) * otib->spare_length);
     }
 }
 
@@ -1510,6 +1521,9 @@ void deallocate_error_information_block(EIB* eib)
 
     if(eib->error_pixels_for_line)
         free(eib->error_pixels_for_line);
+
+    if(eib->spare)
+        free(eib->spare);
 
     free(eib);
 }
@@ -1551,11 +1565,12 @@ void read_error_information_block(FILE*    fp,
     eib->header_block_number = block_number;
     eib->block_length        = block_length;
 
+    uint32_t buffer_offset = 5;
     memcpy(&(eib->number_of_error_information_data),
-           buffer + 5,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
 
-    uint32_t buffer_offset = 7;
     if(eib->number_of_error_information_data > 0)
     {
         eib->error_line_number = 
@@ -1576,10 +1591,12 @@ void read_error_information_block(FILE*    fp,
             buffer_offset += 2;
         }
     }
-    
-    memcpy(&(eib->spare),
+ 
+    eib->spare_length = eib->block_length - buffer_offset;
+    eib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * eib->spare_length);
+    memcpy(eib->spare,
            buffer + buffer_offset,
-           40);
+           sizeof(uint8_t) * eib->spare_length);
 
     free(buffer);
 }
@@ -1611,11 +1628,13 @@ void print_error_information_block(EIB* eib)
                "    Block length (bytes)         : %u\n"
                "    Number of error information  : %u\n"
                "%s\n"
+               "    Spare length (bytes)         : %lu\n"
                "\n",
                eib->header_block_number,
                eib->block_length,
                eib->number_of_error_information_data,
-               buffer);
+               buffer,
+               sizeof(uint8_t) * eib->spare_length);
 
         free(buffer);
     }
@@ -1625,10 +1644,12 @@ void print_error_information_block(EIB* eib)
                "    Block number                 : %u\n"
                "    Block length (bytes)         : %u\n"
                "    Number of error information  : %u\n"
+               "    Spare length (bytes)         : %lu\n"
                "\n",
                eib->header_block_number,
                eib->block_length,
-               eib->number_of_error_information_data);
+               eib->number_of_error_information_data,
+               sizeof(uint8_t) * eib->spare_length);
 
     }
 }

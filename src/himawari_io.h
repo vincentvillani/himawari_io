@@ -202,8 +202,8 @@ typedef struct OTIB
     uint16_t  number_of_observation_times;  // AKA scanline times
     uint16_t* observation_time_line_number; // The line number the observation time is for
     double*   observation_time;             // MJD
-    uint8_t   spare[40];
-
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }OTIB;
 
 
@@ -216,7 +216,8 @@ typedef struct EIB
     uint16_t  number_of_error_information_data;
     uint16_t* error_line_number;
     uint16_t* error_pixels_for_line;
-    uint8_t   spare[40];
+    uint8_t*  spare;
+    uint32_t  spare_length;
 
 }EIB;
 
