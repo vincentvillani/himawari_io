@@ -329,6 +329,8 @@ PIB* allocate_projection_information_block()
 
 void deallocate_projection_information_block(PIB* pib)
 {
+    if(pib->spare)
+        free(pib->spare);
     free(pib);
 }
 
@@ -368,51 +370,83 @@ void read_projection_information_block(FILE*    fp,
 
     pib->header_block_number = block_number;
     pib->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
     memcpy(&(pib->sub_lon),
-           buffer + 3,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(pib->cfac),
-           buffer + 11,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(pib->lfac),
-           buffer + 15,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(pib->coff),
-           buffer + 19,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(pib->loff),
-           buffer + 23,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(pib->Rs),
-           buffer + 27,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(pib->Req),
-           buffer + 35,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(pib->Rpol),
-           buffer + 43,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(pib->R1),
-           buffer + 51,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(pib->R2),
-           buffer + 59,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(pib->R3),
-           buffer + 67,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(pib->Sd_coefficient),
-           buffer + 75,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
+
     memcpy(&(pib->resampling_types),
-           buffer + 83,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(pib->resampling_size),
-           buffer + 85,
+           buffer + buffer_offset,
            2);
-    memcpy(&(pib->spare),
-           buffer + 87,
-           40);
+    buffer_offset += 2;
+
+    pib->spare_length = pib->block_length - buffer_offset;
+    pib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * pib->spare_length);
+    memcpy(pib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * pib->spare_length);
 
     free(buffer);
 }
@@ -438,6 +472,7 @@ void print_projection_information_block(PIB* pib)
            "    Sd coefficent:        : %f\n"
            "    Resampling types      : %u\n"
            "    Resampling sizes      : %u\n"
+           "    Spare length (bytes)  : %lu\n"
            "\n",
            pib->header_block_number,
            pib->block_length,
@@ -454,7 +489,8 @@ void print_projection_information_block(PIB* pib)
            pib->R3,
            pib->Sd_coefficient,
            pib->resampling_types,
-           pib->resampling_size);
+           pib->resampling_size,
+           sizeof(uint8_t) * pib->spare_length);
 }
 
 

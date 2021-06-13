@@ -57,30 +57,31 @@ typedef struct DIB
 // Projection information block
 typedef struct PIB
 {
-    uint8_t  header_block_number; // 3 (fixed value)
-    uint16_t block_length;        // 127 bytes (fixed value)
-    double   sub_lon;             // 140.7 degrees
-    uint32_t cfac;                // Column scaling factor
-    uint32_t lfac;                // Line scaling factor
-    float    coff;                // Column offset
-    float    loff;                // Line offset
-    double   Rs;                  // Distance from earth's center to virtual satellite (Rs)
-                                  // 42164 km (fixed value)
-    double   Req;                 // Earth's equatorial radius (Req)
-                                  // 6378.1370 km (fixed value)
-    double   Rpol;                // Earth's polar radis (Rpol)
-                                  // 6356.7523 km (fixed value)
-    double   R1;                  // (Req^2 - Rpol^2) / Req^2
-                                  // 0.00669438444 (fixed value)
-    double   R2;                  // Rpol^2 / Req^2
-                                  // 0.993305616 (fixed value)
-    double   R3;                  // Req^2 / Rpol^2
-                                  // 1.006739501 (fixed value)
-    double   Sd_coefficient;      // Sd(Rs^2 - Req^2)
-                                  // 1737122264 (fixed value)
-    uint16_t resampling_types;    // Resampling types
-    uint16_t resampling_size;     // Resampling size
-    uint8_t  spare[40];
+    uint8_t   header_block_number; // 3 (fixed value)
+    uint16_t  block_length;        // 127 bytes (fixed value)
+    double    sub_lon;             // 140.7 degrees
+    uint32_t  cfac;                // Column scaling factor
+    uint32_t  lfac;                // Line scaling factor
+    float     coff;                // Column offset
+    float     loff;                // Line offset
+    double    Rs;                  // Distance from earth's center to virtual satellite (Rs)
+                                   // 42164 km (fixed value)
+    double    Req;                 // Earth's equatorial radius (Req)
+                                   // 6378.1370 km (fixed value)
+    double    Rpol;                // Earth's polar radis (Rpol)
+                                   // 6356.7523 km (fixed value)
+    double    R1;                  // (Req^2 - Rpol^2) / Req^2
+                                   // 0.00669438444 (fixed value)
+    double    R2;                  // Rpol^2 / Req^2
+                                   // 0.993305616 (fixed value)
+    double    R3;                  // Req^2 / Rpol^2
+                                   // 1.006739501 (fixed value)
+    double    Sd_coefficient;      // Sd(Rs^2 - Req^2)
+                                   // 1737122264 (fixed value)
+    uint16_t  resampling_types;    // Resampling types
+    uint16_t  resampling_size;     // Resampling size
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }PIB;
 
 
