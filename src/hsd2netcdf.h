@@ -334,10 +334,14 @@ void print_calibration_information_block(CIB* cib);
 
 
 
-IIB* allocate_inter_calibration_information_block(bool allocate_data_p);
+IIB* allocate_inter_calibration_information_block();
 void deallocate_inter_calibration_information_block(IIB* iib);
-void read_inter_calibration_information_block(FILE* fp, IIB* iib, bool fill_data_p, uint32_t header_offset);
+void read_inter_calibration_information_block(FILE*    fp,
+                                              IIB*     iib,
+                                              uint32_t header_offset);
 void print_inter_calibration_information_block(IIB* iib);
+
+
 
 SIB* allocate_segment_information_block(bool allocate_data_p);
 void deallocate_segment_information_block(SIB* sib);
