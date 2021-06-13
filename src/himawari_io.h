@@ -188,7 +188,8 @@ typedef struct NCIB
     uint16_t* line_number_after_rotation;
     float*    shift_for_column_direction;
     float*    shift_for_line_direction;
-    uint8_t   spare[40];
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }NCIB;
 
 

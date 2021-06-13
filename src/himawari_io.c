@@ -1152,7 +1152,7 @@ void print_segment_information_block(SIB* sib)
            "    Total segments               : %u\n"
            "    Segment number               : %u\n"
            "    First line number of segment : %u\n"
-           "    Spare length                 : %lu\n"
+           "    Spare length (bytes)         : %lu\n"
            "\n",
            sib->header_block_number,
            sib->block_length,
@@ -1183,6 +1183,9 @@ void deallocate_navigation_correction_information_block(NCIB* ncib)
 
     if(ncib->shift_for_line_direction)
         free(ncib->shift_for_line_direction);
+
+    if(ncib->spare)
+        free(ncib->spare);
 
     free(ncib);
 }
@@ -1223,21 +1226,27 @@ void read_navigation_correction_information_block(FILE*    fp,
 
     ncib->header_block_number = block_number;
     ncib->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
     memcpy(&(ncib->center_column_of_rotation),
-           buffer + 3,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(ncib->center_line_of_rotation),
-           buffer + 7,
+           buffer + buffer_offset,
            4);
+    buffer_offset += 4;
+
     memcpy(&(ncib->rotational_correction),
-           buffer + 11,
+           buffer + buffer_offset,
            8);
+    buffer_offset += 8;
 
     memcpy(&(ncib->number_of_corrections),
-           buffer + 19,
+           buffer + buffer_offset,
            2);
-
-    uint32_t buffer_offset = 21;
+    buffer_offset += 2;
 
     // Allocate the required memory
     if(ncib->number_of_corrections > 0)
@@ -1268,9 +1277,11 @@ void read_navigation_correction_information_block(FILE*    fp,
         }
     }
 
-    memcpy(&(ncib->spare),
-          buffer + buffer_offset,
-          40);
+    ncib->spare_length = ncib->block_length - buffer_offset;
+    ncib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * ncib->spare_length);
+    memcpy(ncib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * ncib->spare_length);
 
     free(buffer);
 }
@@ -1307,6 +1318,7 @@ void print_navigation_correction_information_block(NCIB* ncib)
                "    Rotational correction (urad)   : %f\n"
                "    Number of corrections          : %u\n\n"
                "%s\n"
+               "    Spare length (bytes)           : %lu\n"
                "\n",
                ncib->header_block_number,
                ncib->block_length,
@@ -1314,7 +1326,8 @@ void print_navigation_correction_information_block(NCIB* ncib)
                ncib->center_line_of_rotation,
                ncib->rotational_correction,
                ncib->number_of_corrections,
-               buffer);
+               buffer,
+               sizeof(uint8_t) * ncib->spare_length);
 
         free(buffer);
     }
@@ -1327,13 +1340,15 @@ void print_navigation_correction_information_block(NCIB* ncib)
                "    Center line of rotation        : %f\n"
                "    Rotational correction (urad)   : %f\n"
                "    Number of corrections          : %u\n\n"
+               "    Spare length (bytes)           : %lu\n"
                "\n",
                ncib->header_block_number,
                ncib->block_length,
                ncib->center_column_of_rotation,
                ncib->center_line_of_rotation,
                ncib->rotational_correction,
-               ncib->number_of_corrections);
+               ncib->number_of_corrections,
+               sizeof(uint8_t) * ncib->spare_length);
     }
 }
 
