@@ -22,8 +22,8 @@ void deallocate_basic_information_block(BIB* bib)
 
 
 
-void read_basic_information_block(FILE* fp,
-                                  BIB*  bib,
+void read_basic_information_block(FILE*    fp,
+                                  BIB*     bib,
                                   uint32_t header_offset)
 {
     // Read the block number/id and block size
@@ -222,6 +222,8 @@ DIB* allocate_data_information_block()
 
 void deallocate_data_information_block(DIB* dib)
 {
+    if(dib->spare)
+        free(dib->spare);
     free(dib);
 }
 
@@ -261,21 +263,33 @@ void read_data_information_block(FILE*    fp,
 
     dib->header_block_number = block_number;
     dib->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
     memcpy(&(dib->bits_per_pixel),
-           buffer + 3,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(dib->number_of_columns),
-           buffer + 5,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(dib->number_of_rows),
-           buffer + 7,
+           buffer + buffer_offset,
            2);
+    buffer_offset += 2;
+
     memcpy(&(dib->compression_flag),
-           buffer + 9,
+           buffer + buffer_offset,
            1);
-    memcpy(&(dib->spare),
-           buffer + 10,
-           40);
+    buffer_offset += 1;
+
+    dib->spare_length = dib->block_length - buffer_offset;
+    dib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * dib->spare_length);
+    memcpy(dib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * dib->spare_length);
 
     free(buffer);
 }
@@ -291,13 +305,15 @@ void print_data_information_block(DIB* dib)
            "    Number of columns (x) : %u\n"
            "    Number of rows    (y) : %u\n"
            "    Compression flag      : %u\n"
+           "    Spare length (bytes)  : %lu\n"
            "\n",
            dib->header_block_number,
            dib->block_length,
            dib->bits_per_pixel,
            dib->number_of_columns,
            dib->number_of_rows,
-           dib->compression_flag);
+           dib->compression_flag,
+           sizeof(uint8_t) * dib->spare_length);
 }
 
 

@@ -42,13 +42,14 @@ typedef struct BIB
 // Data information block
 typedef struct DIB
 {
-    uint8_t  header_block_number; // 2 (fixed value)
-    uint16_t block_length;        // 50 bytes (fixed value)
-    uint16_t bits_per_pixel;      // 16 (fixed value)
-    uint16_t number_of_columns;   // x
-    uint16_t number_of_rows;      // y
-    uint8_t  compression_flag;    // 0 = no compression, 1 = gzip, 2 = bzip2
-    uint8_t  spare[40];
+    uint8_t   header_block_number; // 2 (fixed value)
+    uint16_t  block_length;        // 50 bytes (fixed value)
+    uint16_t  bits_per_pixel;      // 16 (fixed value)
+    uint16_t  number_of_columns;   // x
+    uint16_t  number_of_rows;      // y
+    uint8_t   compression_flag;    // 0 = no compression, 1 = gzip, 2 = bzip2
+    uint8_t*  spare;
+    uint32_t  spare_length;
 }DIB;
 
 
