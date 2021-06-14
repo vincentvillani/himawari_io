@@ -1,6 +1,8 @@
 #include "himawari_io.h"
 
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/param.h>
 
 
 
@@ -161,6 +163,135 @@ void read_basic_information_block(FILE*    fp,
 
 
 
+void write_basic_information_block(FILE*    fp,
+                                   BIB*     bib,
+                                   uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * bib->block_length);
+
+    uint32_t buffer_offset = 0;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->total_header_blocks),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->byte_order),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->satellite_name),
+           16);
+    buffer_offset += 16;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->processing_center),
+           16);
+    buffer_offset += 16;
+
+    // Note: 5 bytes allocated here, but only 4 in the actual file
+    //       I.E. the file doesn't have enough space for the null char
+    memcpy(buffer + buffer_offset,
+           &(bib->observation_area),
+           4);
+    buffer_offset += 4;
+
+    // Note: 3 bytes allocated here, but only 2 in the actual file
+    //       I.E. the file doesn't have enough space for the null char
+    memcpy(buffer + buffer_offset,
+           &(bib->other_observation_info),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->observation_timeline),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->observation_start_time),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->observation_end_time),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->file_creation_time),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->total_header_length),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->total_data_length),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->quality_flag_1),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->quality_flag_2),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->quality_flag_3),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->quality_flag_4),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->file_format_version),
+           32);
+    buffer_offset += 32;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->filename),
+           128);
+    buffer_offset += 128;
+
+    memcpy(buffer + buffer_offset,
+           bib->spare,
+           bib->spare_length);
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * bib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
 void print_basic_information_block(BIB* bib)
 {
     printf("Basic Information Block:\n\n"
@@ -291,6 +422,61 @@ void read_data_information_block(FILE*    fp,
            buffer + buffer_offset,
            sizeof(uint8_t) * dib->spare_length);
 
+    free(buffer);
+}
+
+
+
+void write_data_information_block(FILE*    fp,
+                                  DIB*     dib,
+                                  uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * dib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(dib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->bits_per_pixel),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->number_of_columns),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->number_of_rows),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->compression_flag),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           dib->spare,
+           dib->spare_length);
+    buffer_offset += dib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * dib->block_length,
+           1,
+           fp);
     free(buffer);
 }
 
@@ -448,6 +634,111 @@ void read_projection_information_block(FILE*    fp,
            buffer + buffer_offset,
            sizeof(uint8_t) * pib->spare_length);
 
+    free(buffer);
+}
+
+
+
+void write_projection_information_block(FILE*    fp,
+                                        PIB*     pib,
+                                        uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * pib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(pib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->sub_lon),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->cfac),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->lfac),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->coff),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->loff),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->Rs),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->Req),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->Rpol),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->R1),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->R2),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->R3),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->Sd_coefficient),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->resampling_types),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->resampling_size),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           pib->spare,
+           pib->spare_length);
+    buffer_offset += pib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * pib->block_length,
+           1,
+           fp);
     free(buffer);
 }
 
@@ -1810,7 +2101,7 @@ void read_file(const char* filepath,
                HSD*        hsd)
 {
     FILE* fp = fopen(filepath,
-                     "r");
+                     "rb");
     if(fp == NULL)
     {
         fprintf(stderr,
@@ -1890,7 +2181,35 @@ void read_file(const char* filepath,
 void write_file(const char* filepath,
                 HSD*        hsd)
 {
+    FILE* fp = fopen(filepath,
+                     "wb");
+    if(fp == NULL)
+    {
+        fprintf(stderr,
+                "%s:%d Failed to open %s for writing.\n",
+                __FILE__,
+                __LINE__,
+                filepath);
+        exit(1);
+    }
 
+    uint32_t header_offset = 0;
+    write_basic_information_block(fp,
+                                  hsd->bib,
+                                  header_offset);
+    header_offset += hsd->bib->block_length;
+
+    write_data_information_block(fp,
+                                 hsd->dib,
+                                 header_offset);
+    header_offset += hsd->dib->block_length;
+
+    write_projection_information_block(fp,
+                                       hsd->pib,
+                                       header_offset);
+    header_offset += hsd->pib->block_length;
+
+    fclose(fp);
 }
 
 
@@ -1910,6 +2229,81 @@ void deallocate_hsd(HSD* hsd)
     deallocate_spare_block(hsd->sb);
     deallocate_data_block(hsd->db);
     free(hsd);
+}
+
+
+
+void compare_files(const char* file_1,
+                   const char* file_2)
+{
+    FILE* fp_1 = fopen(file_1,
+                       "rb");
+    FILE* fp_2 = fopen(file_2,
+                       "rb");
+    if(fp_1 == NULL)
+    {
+        fprintf(stderr,
+                "%s:%d Failed to open %s for reading.\n",
+                __FILE__,
+                __LINE__,
+                file_1);
+        exit(1);
+    }
+    if(fp_2 == NULL)
+    {
+        fprintf(stderr,
+                "%s:%d Failed to open %s for reading.\n",
+                __FILE__,
+                __LINE__,
+                file_2);
+        exit(1);
+    }
+
+    struct stat st_1;
+    struct stat st_2;
+    stat(file_1, &st_1);
+    stat(file_2, &st_2);
+
+    // TODO: Change this to be an error eventually
+    if(st_1.st_size != st_2.st_size)
+    {
+        fprintf(stderr,
+                "Filesizes do not match\n"
+                "%s: %lu bytes\n"
+                "%s: %lu bytes\n",
+                file_1,
+                st_1.st_size,
+                file_2,
+                st_2.st_size);
+    }
+
+    // TODO: Remove this eventually, these must match, if they don't they are
+    //       not the same
+    size_t compare_length = MIN(st_1.st_size,
+                                st_2.st_size);
+
+    uint8_t* fp_1_buffer = (uint8_t*)malloc(sizeof(uint8_t) * compare_length);
+    uint8_t* fp_2_buffer = (uint8_t*)malloc(sizeof(uint8_t) * compare_length);
+    fread(fp_1_buffer,
+          sizeof(uint8_t) * compare_length,
+          1,
+          fp_1);
+    fread(fp_2_buffer,
+          sizeof(uint8_t) * compare_length,
+          1,
+          fp_2);
+
+    // Compare the memory
+    int compare_result = memcmp(fp_1_buffer,
+                                fp_2_buffer,
+                                compare_length);
+    printf("Compare result: %d\n",
+           compare_result);
+
+    fclose(fp_1);
+    fclose(fp_2);
+    free(fp_1_buffer);
+    free(fp_2_buffer);
 }
 
 

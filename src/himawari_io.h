@@ -268,6 +268,9 @@ void deallocate_basic_information_block(BIB* bib);
 void read_basic_information_block(FILE*    fp,
                                   BIB*     bib,
                                   uint32_t header_offset);
+void write_basic_information_block(FILE*    fp,
+                                   BIB*     bib,
+                                   uint32_t header_offset);
 void print_basic_information_block(BIB* bib);
 
 
@@ -277,6 +280,9 @@ void deallocate_data_information_block(DIB* dib);
 void read_data_information_block(FILE*    fp,
                                  DIB*     dib,
                                  uint32_t header_offset);
+void write_data_information_block(FILE*    fp,
+                                  DIB*     dib,
+                                  uint32_t header_offset);
 void print_data_information_block(DIB* dib);
 
 
@@ -286,6 +292,9 @@ void deallocate_projection_information_block(PIB* pib);
 void read_projection_information_block(FILE*    fp,
                                        PIB*     pib,
                                        uint32_t header_offset);
+void write_projection_information_block(FILE*    fp,
+                                        PIB*     pib,
+                                        uint32_t header_offset);
 void print_projection_information_block(PIB* pib);
 
 
@@ -378,6 +387,8 @@ void read_file(const char* filepath,
 void write_file(const char* filepath,
                 HSD*        hsd);
 void deallocate_hsd(HSD* hsd);
+void compare_files(const char* file_1,
+                   const char* file_2);
 void print_header(HSD* hsd);
 
 

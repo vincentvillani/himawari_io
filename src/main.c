@@ -25,6 +25,13 @@ int main(int argc, char** argv)
     // Print header information
     print_header(hsd);
 
+    // Write file
+    write_file("../test_data/test.DAT",
+               hsd);
+
+    compare_files("../test_data/HS_H08_20210603_0300_B07_FLDK_R20_S0110.DAT",
+                  "../test_data/test.DAT");
+
     // Deallocate
     deallocate_hsd(hsd);
 
