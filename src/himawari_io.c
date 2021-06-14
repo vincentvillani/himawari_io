@@ -1762,6 +1762,56 @@ void read_segment_information_block(FILE*    fp,
 
 
 
+void write_segment_information_block(FILE*    fp,
+                                     SIB*     sib,
+                                     uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * sib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(sib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(sib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(sib->total_segments),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(sib->segment_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(sib->segment_first_line_number),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           sib->spare,
+           sib->spare_length);
+    buffer_offset += sib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * sib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
 void print_segment_information_block(SIB* sib)
 {
     printf("Segment Information Block:\n\n"
@@ -1901,6 +1951,79 @@ void read_navigation_correction_information_block(FILE*    fp,
            buffer + buffer_offset,
            sizeof(uint8_t) * ncib->spare_length);
 
+    free(buffer);
+}
+
+
+
+void write_navigation_correction_information_block(FILE*    fp,
+                                                   NCIB*    ncib,
+                                                   uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * ncib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(ncib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(ncib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(ncib->center_column_of_rotation),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(ncib->center_line_of_rotation),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(ncib->rotational_correction),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(ncib->number_of_corrections),
+           2);
+    buffer_offset += 2;
+
+    for(uint32_t i = 0; i < ncib->number_of_corrections; ++i)
+    {
+        memcpy(buffer + buffer_offset,
+               ncib->line_number_after_rotation + i,
+               2);
+        buffer_offset += 2;
+
+        memcpy(buffer + buffer_offset,
+               ncib->shift_for_column_direction + i,
+               4);
+        buffer_offset += 4;
+
+        memcpy(buffer + buffer_offset,
+               ncib->shift_for_line_direction + i,
+               4);
+        buffer_offset += 4;
+    }
+
+    memcpy(buffer + buffer_offset,
+           ncib->spare,
+           ncib->spare_length);
+    buffer_offset += ncib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * ncib->block_length,
+           1,
+           fp);
     free(buffer);
 }
 
@@ -2071,6 +2194,59 @@ void read_observation_time_information_block(FILE*    fp,
 
 
 
+void write_observation_time_information_block(FILE*    fp,
+                                              OTIB*    otib,
+                                              uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * otib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(otib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(otib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(otib->number_of_observation_times),
+           2);
+    buffer_offset += 2;
+
+    for(uint32_t i = 0; i < otib->number_of_observation_times; ++i)
+    {
+        memcpy(buffer + buffer_offset,
+               otib->observation_time_line_number + i,
+               2);
+        buffer_offset += 2;
+
+        memcpy(buffer + buffer_offset,
+               otib->observation_time + i,
+               8);
+        buffer_offset += 8;
+    }
+
+    memcpy(buffer + buffer_offset,
+           otib->spare,
+           otib->spare_length);
+    buffer_offset += otib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * otib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
 void print_observation_time_information_block(OTIB* otib)
 {
     if(otib->number_of_observation_times > 0)
@@ -2221,6 +2397,59 @@ void read_error_information_block(FILE*    fp,
 
 
 
+void write_error_information_block(FILE*    fp,
+                                   EIB*     eib,
+                                   uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * eib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(eib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(eib->block_length),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(eib->number_of_error_information_data),
+           2);
+    buffer_offset += 2;
+
+    for(uint32_t i = 0; i < eib->number_of_error_information_data; ++i)
+    {
+        memcpy(buffer + buffer_offset,
+               eib->error_line_number + i,
+               2);
+        buffer_offset += 2;
+
+        memcpy(buffer + buffer_offset,
+               eib->error_pixels_for_line + i,
+               2);
+        buffer_offset += 2;
+    }
+
+    memcpy(buffer + buffer_offset,
+           eib->spare,
+           eib->spare_length);
+    buffer_offset += eib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * eib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
 void print_error_information_block(EIB* eib)
 {
     if(eib->number_of_error_information_data > 0)
@@ -2339,6 +2568,41 @@ void read_spare_block(FILE*    fp,
 
 
 
+void write_spare_block(FILE*    fp,
+                       SB*      sb,
+                       uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * sb->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(sb->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(sb->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           sb->spare,
+           sb->spare_length);
+    buffer_offset += sb->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * sb->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
 void print_spare_block(SB* sb)
 {
     printf("Spare Block:\n\n"
@@ -2386,6 +2650,21 @@ void read_data_block(FILE*    fp,
           sizeof(uint16_t) * db->length,
           1,
           fp);
+}
+
+
+
+void write_data_block(FILE*    fp,
+                      DB*      db,
+                      uint32_t header_offset)
+{
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(db->data,
+           sizeof(uint16_t) * db->length,
+           1,
+           fp);
 }
 
 
@@ -2551,6 +2830,35 @@ void write_file(const char* filepath,
                                               header_offset);
     header_offset += hsd->iib->block_length;
 
+    write_segment_information_block(fp,
+                                    hsd->sib,
+                                    header_offset);
+    header_offset += hsd->sib->block_length;
+
+    write_navigation_correction_information_block(fp,
+                                                  hsd->ncib,
+                                                  header_offset);
+    header_offset += hsd->ncib->block_length;
+
+    write_observation_time_information_block(fp,
+                                             hsd->otib,
+                                             header_offset);
+    header_offset += hsd->otib->block_length;
+
+    write_error_information_block(fp,
+                                  hsd->eib,
+                                  header_offset);
+    header_offset += hsd->eib->block_length;
+
+    write_spare_block(fp,
+                      hsd->sb,
+                      header_offset);
+    header_offset += hsd->sb->block_length;
+
+    write_data_block(fp,
+                     hsd->db,
+                     header_offset);
+
     fclose(fp);
 }
 
@@ -2575,8 +2883,8 @@ void deallocate_hsd(HSD* hsd)
 
 
 
-void compare_files(const char* file_1,
-                   const char* file_2)
+int compare_files(const char* file_1,
+                  const char* file_2)
 {
     FILE* fp_1 = fopen(file_1,
                        "rb");
@@ -2606,7 +2914,6 @@ void compare_files(const char* file_1,
     stat(file_1, &st_1);
     stat(file_2, &st_2);
 
-    // TODO: Change this to be an error eventually
     if(st_1.st_size != st_2.st_size)
     {
         fprintf(stderr,
@@ -2617,35 +2924,40 @@ void compare_files(const char* file_1,
                 st_1.st_size,
                 file_2,
                 st_2.st_size);
+        exit(1);
     }
 
-    // TODO: Remove this eventually, these must match, if they don't they are
-    //       not the same
-    size_t compare_length = MIN(st_1.st_size,
-                                st_2.st_size);
-
-    uint8_t* fp_1_buffer = (uint8_t*)malloc(sizeof(uint8_t) * compare_length);
-    uint8_t* fp_2_buffer = (uint8_t*)malloc(sizeof(uint8_t) * compare_length);
+    uint8_t* fp_1_buffer = (uint8_t*)malloc(sizeof(uint8_t) * st_1.st_size);
+    uint8_t* fp_2_buffer = (uint8_t*)malloc(sizeof(uint8_t) * st_1.st_size);
     fread(fp_1_buffer,
-          sizeof(uint8_t) * compare_length,
+          sizeof(uint8_t) * st_1.st_size,
           1,
           fp_1);
     fread(fp_2_buffer,
-          sizeof(uint8_t) * compare_length,
+          sizeof(uint8_t) * st_1.st_size,
           1,
           fp_2);
 
     // Compare the memory
     int compare_result = memcmp(fp_1_buffer,
                                 fp_2_buffer,
-                                compare_length);
-    printf("Compare result: %d\n",
-           compare_result);
+                                st_1.st_size);
+    if(compare_result != 0)
+    {
+        fprintf(stderr,
+                "%s:%d: compare_result returned error code %d\n",
+                __FILE__,
+                __LINE__,
+                compare_result);
+        exit(1);
+    }
 
     fclose(fp_1);
     fclose(fp_2);
     free(fp_1_buffer);
     free(fp_2_buffer);
+
+    return compare_result;
 }
 
 

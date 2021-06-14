@@ -340,6 +340,9 @@ void deallocate_segment_information_block(SIB* sib);
 void read_segment_information_block(FILE*    fp,
                                     SIB*     sib,
                                     uint32_t header_offset);
+void write_segment_information_block(FILE*    fp,
+                                     SIB*     sib,
+                                     uint32_t header_offset);
 void print_segment_information_block(SIB* sib);
 
 
@@ -349,6 +352,9 @@ void deallocate_navigation_correction_information_block(NCIB* ncib);
 void read_navigation_correction_information_block(FILE*    fp,
                                                   NCIB*    ncib,
                                                   uint32_t header_offset);
+void write_navigation_correction_information_block(FILE*    fp,
+                                                   NCIB*    ncib,
+                                                   uint32_t header_offset);
 void print_navigation_correction_information_block(NCIB* ncib);
 
 
@@ -358,6 +364,9 @@ void deallocate_observation_time_information_block(OTIB* otib);
 void read_observation_time_information_block(FILE*    fp,
                                              OTIB*    otib,
                                              uint32_t header_offset);
+void write_observation_time_information_block(FILE*    fp,
+                                              OTIB*    otib,
+                                              uint32_t header_offset);
 void print_observation_time_information_block(OTIB* otib);
 
 
@@ -367,6 +376,9 @@ void deallocate_error_information_block(EIB* eib);
 void read_error_information_block(FILE*    fp,
                                   EIB*     eib,
                                   uint32_t header_offset);
+void write_error_information_block(FILE*    fp,
+                                   EIB*     eib,
+                                   uint32_t header_offset);
 void print_error_information_block(EIB* eib);
 
 
@@ -376,6 +388,9 @@ void deallocate_spare_block(SB* sb);
 void read_spare_block(FILE*    fp,
                       SB*      sb,
                       uint32_t header_offset);
+void write_spare_block(FILE*    fp,
+                       SB*      sb,
+                       uint32_t header_offset);
 void print_spare_block(SB* sb);
 
 
@@ -386,6 +401,9 @@ void read_data_block(FILE*    fp,
                      DB*      db,
                      uint32_t header_offset,
                      uint32_t length);
+void write_data_block(FILE*    fp,
+                      DB*      db,
+                      uint32_t header_offset);
 void print_data_block(DB* db);
 
 
@@ -396,8 +414,8 @@ void read_file(const char* filepath,
 void write_file(const char* filepath,
                 HSD*        hsd);
 void deallocate_hsd(HSD* hsd);
-void compare_files(const char* file_1,
-                   const char* file_2);
+int compare_files(const char* file_1,
+                  const char* file_2);
 void print_header(HSD* hsd);
 
 
