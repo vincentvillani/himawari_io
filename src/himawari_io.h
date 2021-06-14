@@ -304,6 +304,9 @@ void deallocate_navigation_information_block(NIB* nib);
 void read_navigation_information_block(FILE*    fp,
                                        NIB*     nib,
                                        uint32_t header_offset);
+void write_navigation_information_block(FILE*    fp,
+                                        NIB*     nib,
+                                        uint32_t header_offset);
 void print_navigation_information_block(NIB* nib);
 
 
@@ -313,6 +316,9 @@ void deallocate_calibration_information_block(CIB* cib);
 void read_calibration_information_block(FILE*    fp,
                                         CIB*     cib,
                                         uint32_t header_offset);
+void write_calibration_information_block(FILE*    fp,
+                                         CIB*     cib,
+                                         uint32_t header_offset);
 void print_calibration_information_block(CIB* cib);
 
 
@@ -322,6 +328,9 @@ void deallocate_inter_calibration_information_block(IIB* iib);
 void read_inter_calibration_information_block(FILE*    fp,
                                               IIB*     iib,
                                               uint32_t header_offset);
+void write_inter_calibration_information_block(FILE*    fp,
+                                               IIB*     iib,
+                                               uint32_t header_offset);
 void print_inter_calibration_information_block(IIB* iib);
 
 

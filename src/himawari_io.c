@@ -911,6 +911,102 @@ void read_navigation_information_block(FILE*    fp,
 
 
 
+void write_navigation_information_block(FILE*    fp,
+                                        NIB*     nib,
+                                        uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * nib->block_length);
+
+    uint32_t buffer_offset = 0;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->navigation_information_time),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->ssp_longitude),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->ssp_latitude),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->earth_center_to_satellite),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->nadir_longitude),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->nadir_latitude),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->sun_position_x),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->sun_position_y),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->sun_position_z),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->moon_position_x),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->moon_position_y),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->moon_position_z),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           nib->spare,
+           nib->spare_length);
+    buffer_offset += nib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * nib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
 void print_navigation_information_block(NIB* nib)
 {
     printf("Navigation Information Block:\n\n"
@@ -1117,6 +1213,147 @@ void read_calibration_information_block(FILE*    fp,
 
 
 
+void write_calibration_information_block(FILE*    fp,
+                                         CIB*     cib,
+                                         uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * cib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(cib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(cib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(cib->band_number),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(cib->central_wave_length),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(cib->bits_per_pixel),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(cib->error_pixel_value),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(cib->outside_scan_pixel_value),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(cib->count_radiance_slope),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(cib->count_radiance_intercept),
+           8);
+    buffer_offset += 8;
+
+    // If this is an IR band
+    if(cib->band_number >=7 )
+    {
+        memcpy(buffer + buffer_offset,
+               &(cib->ir_rad_to_bt_c0),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->ir_rad_to_bt_c1),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->ir_rad_to_bt_c2),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->ir_bt_to_rad_c0),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->ir_bt_to_rad_c1),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->ir_bt_to_rad_c2),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->ir_c),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->ir_h),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->ir_k),
+               8);
+        buffer_offset += 8;
+    }
+    else
+    {
+        memcpy(buffer + buffer_offset,
+               &(cib->vis_nir_c_prime),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->vis_nir_calib_update_time),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->vis_nir_count_radiance_slope),
+               8);
+        buffer_offset += 8;
+
+        memcpy(buffer + buffer_offset,
+               &(cib->vis_nir_count_radiance_intercept),
+               8);
+        buffer_offset += 8;
+    }
+
+    memcpy(buffer + buffer_offset,
+           cib->spare,
+           cib->spare_length);
+    buffer_offset += cib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * cib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
 void print_calibration_information_block(CIB* cib)
 {
     if(cib->band_number >= 7)
@@ -1314,6 +1551,96 @@ void read_inter_calibration_information_block(FILE*    fp,
            buffer + buffer_offset,
            sizeof(uint8_t) * iib->spare_length);
 
+    free(buffer);
+}
+
+
+
+void write_inter_calibration_information_block(FILE*    fp,
+                                               IIB*     iib,
+                                               uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * iib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(iib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->gsics_calibration_intercept),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->gsics_calibration_slope),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->gsics_calibration_quadratic),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->radiance_bias),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->radiance_bias_uncertainty),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->radiance),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->gsics_calibration_validity_start),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->gsics_calibration_validity_end),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->gsics_radiance_validity_upper_limit),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->gsics_radiance_validity_lower_limit),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(iib->gsics_correction_filename),
+           128);
+    buffer_offset += 128;
+
+    memcpy(buffer + buffer_offset,
+           iib->spare,
+           iib->spare_length);
+    buffer_offset += iib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * iib->block_length,
+           1,
+           fp);
     free(buffer);
 }
 
@@ -2208,6 +2535,21 @@ void write_file(const char* filepath,
                                        hsd->pib,
                                        header_offset);
     header_offset += hsd->pib->block_length;
+
+    write_navigation_information_block(fp,
+                                       hsd->nib,
+                                       header_offset);
+    header_offset += hsd->nib->block_length;
+
+    write_calibration_information_block(fp,
+                                        hsd->cib,
+                                        header_offset);
+    header_offset += hsd->cib->block_length;
+
+    write_inter_calibration_information_block(fp,
+                                              hsd->iib,
+                                              header_offset);
+    header_offset += hsd->iib->block_length;
 
     fclose(fp);
 }
