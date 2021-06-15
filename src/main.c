@@ -1,41 +1,70 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <libgen.h>
 
 #include "himawari_io.h"
+
 
 
 // TODO:
 // Test with each HSD version, both VIS/NIR and IR band
 // Read in HSD, then write out that HSD again. Should be byte to byte identical
-// Add overwrite flag
+
+// TODO: Add arguments for reading header only
+// TODO: Check if HSD has already been used? Then do something?
+// TODO: bzip2 support
+
 int main(int argc, char** argv)
 {
-    // Allocate
-    HSD* hsd = allocate_hsd();
+    if(argc != 3)
+    {
+        printf("Usage: %s <input filepath> <output directory>\n",
+                argv[0]);
+        exit(1);
+    }
+
+    char* input_filepath = argv[1];
+    char* output_dir     = argv[2];
+    char* input_file     = basename(input_filepath);
 
     // Read file
-    //read_file("../test_data/HS_H08_20210603_0300_B01_FLDK_R10_S0110.DAT",
-    //          hsd);
-    read_file("../test_data/HS_H08_20210603_0300_B07_FLDK_R20_S0110.DAT",
-              hsd);
-    //read_file("../test_data/HS_H08_20210603_0300_B13_FLDK_R20_S0110.DAT",
-    //          hsd);
+    HSD* hsd = read_file(input_filepath,
+                         true);
 
     // Print header information
-    print_header(hsd);
+    //print_header(hsd);
 
-    // Write file
-    write_file("../test_data/test.DAT",
+    // Write file back out
+    const uint32_t buffer_length = 4096;
+    char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
+    snprintf(buffer,
+             buffer_length,
+             "%s/%s",
+             output_dir,
+             input_file);
+
+    write_file(buffer,
                hsd);
+    
 
-    compare_files("../test_data/HS_H08_20210603_0300_B07_FLDK_R20_S0110.DAT",
-                  "../test_data/test.DAT");
+    int compare_result = compare_files(input_filepath,
+                                       buffer);
+                                       
+    if(compare_result != 0)
+    {
+        fprintf(stderr,
+                "ERROR - %s:%d: compare_result returned error code %d\n",
+                __FILE__,
+                __LINE__,
+                compare_result);
+    }
 
     // Deallocate
-    deallocate_hsd(hsd);
+    free_hsd(hsd);
+    free(buffer);
 
-    return 0;
+    return compare_result;
 }
 
 

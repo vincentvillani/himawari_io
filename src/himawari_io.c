@@ -6,6 +6,29 @@
 
 
 
+HSD* _allocate_hsd()
+{
+    HSD* result = (HSD*)calloc(1,
+                               sizeof(HSD));
+
+    result->bib  = allocate_basic_information_block();
+    result->dib  = allocate_data_information_block();
+    result->pib  = allocate_projection_information_block();
+    result->nib  = allocate_navigation_information_block();
+    result->cib  = allocate_calibration_information_block();
+    result->iib  = allocate_inter_calibration_information_block();
+    result->sib  = allocate_segment_information_block();
+    result->ncib = allocate_navigation_correction_information_block();
+    result->otib = allocate_observation_time_information_block();
+    result->eib  = allocate_error_information_block();
+    result->sb   = allocate_spare_block();
+    result->db   = allocate_data_block();
+
+    return result;
+}
+
+
+
 BIB* allocate_basic_information_block()
 {
     BIB* result = (BIB*)calloc(1,
@@ -2680,31 +2703,11 @@ void print_data_block(DB* db)
 
 
 
-HSD* allocate_hsd()
-{
-    HSD* result = (HSD*)calloc(1,
-                               sizeof(HSD));
-
-    result->bib  = allocate_basic_information_block();
-    result->dib  = allocate_data_information_block();
-    result->pib  = allocate_projection_information_block();
-    result->nib  = allocate_navigation_information_block();
-    result->cib  = allocate_calibration_information_block();
-    result->iib  = allocate_inter_calibration_information_block();
-    result->sib  = allocate_segment_information_block();
-    result->ncib = allocate_navigation_correction_information_block();
-    result->otib = allocate_observation_time_information_block();
-    result->eib  = allocate_error_information_block();
-    result->sb   = allocate_spare_block();
-    result->db   = allocate_data_block();
-
-    return result;
-}
 
 
 
-void read_file(const char* filepath,
-               HSD*        hsd)
+HSD* read_file(const char* filepath,
+               bool        read_data)
 {
     FILE* fp = fopen(filepath,
                      "rb");
@@ -2718,7 +2721,9 @@ void read_file(const char* filepath,
         exit(1);
     }
 
+    HSD*     hsd = _allocate_hsd();
     uint32_t block_offset = 0;
+
     read_basic_information_block(fp,
                                  hsd->bib,
                                  block_offset);
@@ -2774,12 +2779,16 @@ void read_file(const char* filepath,
                      block_offset);
     block_offset += hsd->sb->block_length;
 
-    read_data_block(fp,
-                    hsd->db,
-                    block_offset,
-                    hsd->dib->number_of_columns * hsd->dib->number_of_rows);
+    if(read_data)
+    {
+        read_data_block(fp,
+                        hsd->db,
+                        block_offset,
+                        hsd->dib->number_of_columns * hsd->dib->number_of_rows);
+    }
 
     fclose(fp);
+    return hsd;
 }
 
 
@@ -2864,7 +2873,7 @@ void write_file(const char* filepath,
 
 
 
-void deallocate_hsd(HSD* hsd)
+void free_hsd(HSD* hsd)
 {
     deallocate_basic_information_block(hsd->bib);
     deallocate_data_information_block(hsd->dib);
@@ -2918,13 +2927,13 @@ int compare_files(const char* file_1,
     {
         fprintf(stderr,
                 "Filesizes do not match\n"
-                "%s: %lu bytes\n"
-                "%s: %lu bytes\n",
+                "%s: %lld bytes\n"
+                "%s: %lld bytes\n",
                 file_1,
                 st_1.st_size,
                 file_2,
                 st_2.st_size);
-        exit(1);
+        return -1;
     }
 
     uint8_t* fp_1_buffer = (uint8_t*)malloc(sizeof(uint8_t) * st_1.st_size);
@@ -2942,15 +2951,6 @@ int compare_files(const char* file_1,
     int compare_result = memcmp(fp_1_buffer,
                                 fp_2_buffer,
                                 st_1.st_size);
-    if(compare_result != 0)
-    {
-        fprintf(stderr,
-                "%s:%d: compare_result returned error code %d\n",
-                __FILE__,
-                __LINE__,
-                compare_result);
-        exit(1);
-    }
 
     fclose(fp_1);
     fclose(fp_2);

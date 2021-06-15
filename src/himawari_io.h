@@ -1,5 +1,5 @@
-#ifndef HSD2NETCDF_H
-#define HSD2NETCDF_H
+#ifndef HIMAWARI_IO_H 
+#define HIMAWARI_IO_H 
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -408,14 +408,14 @@ void print_data_block(DB* db);
 
 
 
-HSD* allocate_hsd();
-void read_file(const char* filepath,
-               HSD*        hsd);
+HSD* read_file(const char* filepath,
+               bool        read_data);
 void write_file(const char* filepath,
                 HSD*        hsd);
-void deallocate_hsd(HSD* hsd);
-int compare_files(const char* file_1,
-                  const char* file_2);
+void free_hsd(HSD* hsd);
+
+int  compare_files(const char* file_1,
+                   const char* file_2);
 void print_header(HSD* hsd);
 
 
