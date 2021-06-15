@@ -263,7 +263,6 @@ typedef struct HSD
 
 
 
-BIB* allocate_basic_information_block();
 void deallocate_basic_information_block(BIB* bib);
 void read_basic_information_block(FILE*    fp,
                                   BIB*     bib,
@@ -274,8 +273,6 @@ void write_basic_information_block(FILE*    fp,
 void print_basic_information_block(BIB* bib);
 
 
-
-DIB* allocate_data_information_block();
 void deallocate_data_information_block(DIB* dib);
 void read_data_information_block(FILE*    fp,
                                  DIB*     dib,
@@ -287,7 +284,6 @@ void print_data_information_block(DIB* dib);
 
 
 
-PIB* allocate_projection_information_block();
 void deallocate_projection_information_block(PIB* pib);
 void read_projection_information_block(FILE*    fp,
                                        PIB*     pib,
@@ -299,7 +295,6 @@ void print_projection_information_block(PIB* pib);
 
 
 
-NIB* allocate_navigation_information_block();
 void deallocate_navigation_information_block(NIB* nib);
 void read_navigation_information_block(FILE*    fp,
                                        NIB*     nib,
@@ -311,7 +306,6 @@ void print_navigation_information_block(NIB* nib);
 
 
 
-CIB* allocate_calibration_information_block();
 void deallocate_calibration_information_block(CIB* cib);
 void read_calibration_information_block(FILE*    fp,
                                         CIB*     cib,
@@ -323,7 +317,6 @@ void print_calibration_information_block(CIB* cib);
 
 
 
-IIB* allocate_inter_calibration_information_block();
 void deallocate_inter_calibration_information_block(IIB* iib);
 void read_inter_calibration_information_block(FILE*    fp,
                                               IIB*     iib,
@@ -335,7 +328,6 @@ void print_inter_calibration_information_block(IIB* iib);
 
 
 
-SIB* allocate_segment_information_block();
 void deallocate_segment_information_block(SIB* sib);
 void read_segment_information_block(FILE*    fp,
                                     SIB*     sib,
@@ -347,7 +339,6 @@ void print_segment_information_block(SIB* sib);
 
 
 
-NCIB* allocate_navigation_correction_information_block();
 void deallocate_navigation_correction_information_block(NCIB* ncib);
 void read_navigation_correction_information_block(FILE*    fp,
                                                   NCIB*    ncib,
@@ -359,7 +350,6 @@ void print_navigation_correction_information_block(NCIB* ncib);
 
 
 
-OTIB* allocate_observation_time_information_block();
 void deallocate_observation_time_information_block(OTIB* otib);
 void read_observation_time_information_block(FILE*    fp,
                                              OTIB*    otib,
@@ -371,7 +361,6 @@ void print_observation_time_information_block(OTIB* otib);
 
 
 
-EIB* allocate_error_information_block();
 void deallocate_error_information_block(EIB* eib);
 void read_error_information_block(FILE*    fp,
                                   EIB*     eib,
@@ -383,7 +372,6 @@ void print_error_information_block(EIB* eib);
 
 
 
-SB* allocate_spare_block();
 void deallocate_spare_block(SB* sb);
 void read_spare_block(FILE*    fp,
                       SB*      sb,
@@ -395,7 +383,6 @@ void print_spare_block(SB* sb);
 
 
 
-DB* allocate_data_block();
 void deallocate_data_block(DB* db);
 void read_data_block(FILE*    fp,
                      DB*      db,

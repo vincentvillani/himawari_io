@@ -6,35 +6,157 @@
 
 
 
-HSD* _allocate_hsd()
-{
-    HSD* result = (HSD*)calloc(1,
-                               sizeof(HSD));
+// Private functions
+// ----------------------------------------
 
-    result->bib  = allocate_basic_information_block();
-    result->dib  = allocate_data_information_block();
-    result->pib  = allocate_projection_information_block();
-    result->nib  = allocate_navigation_information_block();
-    result->cib  = allocate_calibration_information_block();
-    result->iib  = allocate_inter_calibration_information_block();
-    result->sib  = allocate_segment_information_block();
-    result->ncib = allocate_navigation_correction_information_block();
-    result->otib = allocate_observation_time_information_block();
-    result->eib  = allocate_error_information_block();
-    result->sb   = allocate_spare_block();
-    result->db   = allocate_data_block();
-
-    return result;
-}
+HSD*  _allocate_hsd();
+BIB*  _allocate_basic_information_block();
+DIB*  _allocate_data_information_block();
+PIB*  _allocate_projection_information_block();
+NIB*  _allocate_navigation_information_block();
+CIB*  _allocate_calibration_information_block();
+IIB*  _allocate_inter_calibration_information_block();
+SIB*  _allocate_segment_information_block();
+NCIB* _allocate_navigation_correction_information_block();
+OTIB* _allocate_observation_time_information_block();
+EIB*  _allocate_error_information_block();
+SB*   _allocate_spare_block();
+DB*   _allocate_data_block();
 
 
-
-BIB* allocate_basic_information_block()
+BIB* _allocate_basic_information_block()
 {
     BIB* result = (BIB*)calloc(1,
                                sizeof(BIB));
     return result;
 }
+
+
+
+DIB* _allocate_data_information_block()
+{
+    DIB* result = (DIB*)calloc(1,
+                               sizeof(DIB));
+    return result;
+}
+
+
+
+PIB* _allocate_projection_information_block()
+{
+    PIB* result = (PIB*)calloc(1,
+                               sizeof(PIB));
+    return result;
+}
+
+
+
+NIB* _allocate_navigation_information_block()
+{
+    NIB* result = (NIB*)calloc(1,
+                               sizeof(NIB));
+    return result;
+}
+
+
+
+CIB* _allocate_calibration_information_block()
+{
+    CIB* result = (CIB*)calloc(1,
+                               sizeof(CIB));
+    return result;
+}
+
+
+
+IIB* _allocate_inter_calibration_information_block()
+{
+    IIB* result = (IIB*)calloc(1,
+                               sizeof(IIB));
+    return result;
+}
+
+
+
+SIB* _allocate_segment_information_block()
+{
+    SIB* result = (SIB*)calloc(1,
+                               sizeof(SIB));
+    return result;
+}
+
+
+
+NCIB* _allocate_navigation_correction_information_block()
+{
+    NCIB* result = (NCIB*)calloc(1,
+                                 sizeof(NCIB));
+    return result;
+}
+
+
+
+OTIB* _allocate_observation_time_information_block()
+{
+    OTIB* result = (OTIB*)calloc(1,
+                                 sizeof(OTIB));
+    return result;
+}
+
+
+
+EIB* _allocate_error_information_block()
+{
+    EIB* result = (EIB*)calloc(1,
+                               sizeof(EIB));
+    return result;
+}
+
+
+
+SB* _allocate_spare_block()
+{
+    SB* result = (SB*)calloc(1,
+                             sizeof(SB));
+    return result;
+}
+
+
+
+DB* _allocate_data_block()
+{
+    DB* result = (DB*)calloc(1,
+                             sizeof(DB));
+    return result;
+}
+
+
+
+HSD* _allocate_hsd()
+{
+    HSD* result = (HSD*)calloc(1,
+                               sizeof(HSD));
+
+    result->bib  = _allocate_basic_information_block();
+    result->dib  = _allocate_data_information_block();
+    result->pib  = _allocate_projection_information_block();
+    result->nib  = _allocate_navigation_information_block();
+    result->cib  = _allocate_calibration_information_block();
+    result->iib  = _allocate_inter_calibration_information_block();
+    result->sib  = _allocate_segment_information_block();
+    result->ncib = _allocate_navigation_correction_information_block();
+    result->otib = _allocate_observation_time_information_block();
+    result->eib  = _allocate_error_information_block();
+    result->sb   = _allocate_spare_block();
+    result->db   = _allocate_data_block();
+
+    return result;
+}
+
+
+
+// Public functions
+// ----------------------------------------
 
 
 
@@ -365,12 +487,6 @@ void print_basic_information_block(BIB* bib)
 
 
 
-DIB* allocate_data_information_block()
-{
-    DIB* result = (DIB*)calloc(1,
-                               sizeof(DIB));
-    return result;
-}
 
 
 
@@ -527,12 +643,6 @@ void print_data_information_block(DIB* dib)
 
 
 
-PIB* allocate_projection_information_block()
-{
-    PIB* result = (PIB*)calloc(1,
-                               sizeof(PIB));
-    return result;
-}
 
 
 
@@ -809,12 +919,6 @@ void print_projection_information_block(PIB* pib)
 
 
 
-NIB* allocate_navigation_information_block()
-{
-    NIB* result = (NIB*)calloc(1,
-                               sizeof(NIB));
-    return result;
-}
 
 
 
@@ -1064,12 +1168,6 @@ void print_navigation_information_block(NIB* nib)
 
 
 
-CIB* allocate_calibration_information_block()
-{
-    CIB* result = (CIB*)calloc(1,
-                               sizeof(CIB));
-    return result;
-}
 
 
 
@@ -1459,12 +1557,6 @@ void print_calibration_information_block(CIB* cib)
 
 
 
-IIB* allocate_inter_calibration_information_block()
-{
-    IIB* result = (IIB*)calloc(1,
-                               sizeof(IIB));
-    return result;
-}
 
 
 
@@ -1705,12 +1797,6 @@ void print_inter_calibration_information_block(IIB* iib)
 
 
 
-SIB* allocate_segment_information_block()
-{
-    SIB* result = (SIB*)calloc(1,
-                               sizeof(SIB));
-    return result;
-}
 
 
 
@@ -1854,13 +1940,6 @@ void print_segment_information_block(SIB* sib)
 }
 
 
-
-NCIB* allocate_navigation_correction_information_block()
-{
-    NCIB* result = (NCIB*)calloc(1,
-                                 sizeof(NCIB));
-    return result;
-}
 
 
 
@@ -2118,12 +2197,6 @@ void print_navigation_correction_information_block(NCIB* ncib)
 
 
 
-OTIB* allocate_observation_time_information_block()
-{
-    OTIB* result = (OTIB*)calloc(1,
-                                 sizeof(OTIB));
-    return result;
-}
 
 
 
@@ -2322,12 +2395,6 @@ void print_observation_time_information_block(OTIB* otib)
 
 
 
-EIB* allocate_error_information_block()
-{
-    EIB* result = (EIB*)calloc(1,
-                               sizeof(EIB));
-    return result;
-}
 
 
 
@@ -2526,12 +2593,6 @@ void print_error_information_block(EIB* eib)
 
 
 
-SB* allocate_spare_block()
-{
-    SB* result = (SB*)calloc(1,
-                             sizeof(SB));
-    return result;
-}
 
 
 
@@ -2640,12 +2701,6 @@ void print_spare_block(SB* sb)
 
 
 
-DB* allocate_data_block()
-{
-    DB* result = (DB*)calloc(1,
-                             sizeof(DB));
-    return result;
-}
 
 
 
