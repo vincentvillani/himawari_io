@@ -6,7 +6,7 @@
 
 
 
-// Private functions
+// Private function declariations
 // ----------------------------------------
 
 HSD*  _allocate_hsd();
@@ -22,6 +22,113 @@ OTIB* _allocate_observation_time_information_block();
 EIB*  _allocate_error_information_block();
 SB*   _allocate_spare_block();
 DB*   _allocate_data_block();
+
+void _deallocate_basic_information_block(BIB* bib);
+void _deallocate_data_information_block(DIB* dib);
+void _deallocate_projection_information_block(PIB* pib);
+void _deallocate_navigation_information_block(NIB* nib);
+void _deallocate_calibration_information_block(CIB* cib);
+void _deallocate_inter_calibration_information_block(IIB* iib);
+void _deallocate_segment_information_block(SIB* sib);
+void _deallocate_navigation_correction_information_block(NCIB* ncib);
+void _deallocate_observation_time_information_block(OTIB* otib);
+void _deallocate_error_information_block(EIB* eib);
+void _deallocate_spare_block(SB* sb);
+void _deallocate_data_block(DB* db);
+
+void _read_basic_information_block(FILE*    fp,
+                                   BIB*     bib,
+                                   uint32_t header_offset);
+void _read_data_information_block(FILE*    fp,
+                                  DIB*     dib,
+                                  uint32_t header_offset);
+void _read_projection_information_block(FILE*    fp,
+                                       PIB*     pib,
+                                       uint32_t header_offset);
+void _read_navigation_information_block(FILE*    fp,
+                                        NIB*     nib,
+                                        uint32_t header_offset);
+void _read_calibration_information_block(FILE*    fp,
+                                         CIB*     cib,
+                                         uint32_t header_offset);
+void _read_inter_calibration_information_block(FILE*    fp,
+                                               IIB*     iib,
+                                               uint32_t header_offset);
+void _read_segment_information_block(FILE*    fp,
+                                     SIB*     sib,
+                                     uint32_t header_offset);
+void _read_navigation_correction_information_block(FILE*    fp,
+                                                   NCIB*    ncib,
+                                                   uint32_t header_offset);
+void _read_observation_time_information_block(FILE*    fp,
+                                              OTIB*    otib,
+                                              uint32_t header_offset);
+void _read_error_information_block(FILE*    fp,
+                                   EIB*     eib,
+                                   uint32_t header_offset);
+void _read_spare_block(FILE*    fp,
+                       SB*      sb,
+                       uint32_t header_offset);
+void _read_data_block(FILE*    fp,
+                      DB*      db,
+                      uint32_t header_offset,
+                      uint32_t length);
+
+void _write_basic_information_block(FILE*    fp,
+                                    BIB*     bib,
+                                    uint32_t header_offset);
+void _write_data_information_block(FILE*    fp,
+                                   DIB*     dib,
+                                   uint32_t header_offset);
+void _write_projection_information_block(FILE*    fp,
+                                         PIB*     pib,
+                                         uint32_t header_offset);
+void _write_navigation_information_block(FILE*    fp,
+                                         NIB*     nib,
+                                         uint32_t header_offset);
+void _write_calibration_information_block(FILE*    fp,
+                                          CIB*     cib,
+                                          uint32_t header_offset);
+void _write_inter_calibration_information_block(FILE*    fp,
+                                                IIB*     iib,
+                                                uint32_t header_offset);
+void _write_segment_information_block(FILE*    fp,
+                                      SIB*     sib,
+                                      uint32_t header_offset);
+void _write_navigation_correction_information_block(FILE*    fp,
+                                                    NCIB*    ncib,
+                                                    uint32_t header_offset);
+void _write_observation_time_information_block(FILE*    fp,
+                                               OTIB*    otib,
+                                               uint32_t header_offset);
+void _write_error_information_block(FILE*    fp,
+                                    EIB*     eib,
+                                    uint32_t header_offset);
+void _write_spare_block(FILE*    fp,
+                        SB*      sb,
+                        uint32_t header_offset);
+void _write_data_block(FILE*    fp,
+                       DB*      db,
+                       uint32_t header_offset);
+
+void _print_basic_information_block(BIB* bib);
+void _print_data_information_block(DIB* dib);
+void _print_projection_information_block(PIB* pib);
+void _print_navigation_information_block(NIB* nib);
+void _print_calibration_information_block(CIB* cib);
+void _print_inter_calibration_information_block(IIB* iib);
+void _print_segment_information_block(SIB* sib);
+void _print_navigation_correction_information_block(NCIB* ncib);
+void _print_observation_time_information_block(OTIB* otib);
+void _print_error_information_block(EIB* eib);
+void _print_spare_block(SB* sb);
+void _print_data_block(DB* db);
+
+
+
+// Private function implementations
+// ----------------------------------------
+
 
 
 BIB* _allocate_basic_information_block()
@@ -155,12 +262,7 @@ HSD* _allocate_hsd()
 
 
 
-// Public functions
-// ----------------------------------------
-
-
-
-void deallocate_basic_information_block(BIB* bib)
+void _deallocate_basic_information_block(BIB* bib)
 {
     if(bib->spare)
         free(bib->spare);
@@ -169,9 +271,132 @@ void deallocate_basic_information_block(BIB* bib)
 
 
 
-void read_basic_information_block(FILE*    fp,
-                                  BIB*     bib,
-                                  uint32_t header_offset)
+void _deallocate_data_information_block(DIB* dib)
+{
+    if(dib->spare)
+        free(dib->spare);
+    free(dib);
+}
+
+
+
+void _deallocate_projection_information_block(PIB* pib)
+{
+    if(pib->spare)
+        free(pib->spare);
+    free(pib);
+}
+
+
+
+void _deallocate_navigation_information_block(NIB* nib)
+{
+    if(nib->spare)
+        free(nib->spare);
+    free(nib);
+}
+
+
+
+void _deallocate_calibration_information_block(CIB* cib)
+{
+    if(cib->spare)
+        free(cib->spare);
+    free(cib);
+}
+
+
+
+void _deallocate_inter_calibration_information_block(IIB* iib)
+{
+    if(iib->spare)
+        free(iib->spare);
+    free(iib);
+}
+
+
+
+void _deallocate_segment_information_block(SIB* sib)
+{
+    if(sib->spare)
+        free(sib->spare);
+    free(sib);
+}
+
+
+
+void _deallocate_navigation_correction_information_block(NCIB* ncib)
+{
+    if(ncib->line_number_after_rotation)
+        free(ncib->line_number_after_rotation);
+
+    if(ncib->shift_for_column_direction)
+        free(ncib->shift_for_column_direction);
+
+    if(ncib->shift_for_line_direction)
+        free(ncib->shift_for_line_direction);
+
+    if(ncib->spare)
+        free(ncib->spare);
+
+    free(ncib);
+}
+
+
+
+void _deallocate_observation_time_information_block(OTIB* otib)
+{
+    if(otib->observation_time_line_number)
+        free(otib->observation_time_line_number);
+
+    if(otib->observation_time)
+        free(otib->observation_time);
+
+    if(otib->spare)
+        free(otib->spare);
+
+    free(otib);
+}
+
+
+
+void _deallocate_error_information_block(EIB* eib)
+{
+    if(eib->error_line_number)
+        free(eib->error_line_number);
+
+    if(eib->error_pixels_for_line)
+        free(eib->error_pixels_for_line);
+
+    if(eib->spare)
+        free(eib->spare);
+
+    free(eib);
+}
+
+
+
+void _deallocate_spare_block(SB* sb)
+{
+    if(sb->spare)
+        free(sb->spare);
+    free(sb);
+}
+
+
+
+void _deallocate_data_block(DB* db)
+{
+    if(db->data)
+        free(db->data);
+    free(db);
+}
+
+
+
+void _read_basic_information_block(FILE*    fp,
+                                   BIB*     bib,
+                                   uint32_t header_offset)
 {
     // Read the block number/id and block size
     uint8_t  block_number = 0;
@@ -308,200 +533,9 @@ void read_basic_information_block(FILE*    fp,
 
 
 
-void write_basic_information_block(FILE*    fp,
-                                   BIB*     bib,
-                                   uint32_t header_offset)
-{
-    // Allocate a buffer to store data before writing to disk
-    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * bib->block_length);
-
-    uint32_t buffer_offset = 0;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->header_block_number),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->block_length),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->total_header_blocks),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->byte_order),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->satellite_name),
-           16);
-    buffer_offset += 16;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->processing_center),
-           16);
-    buffer_offset += 16;
-
-    // Note: 5 bytes allocated here, but only 4 in the actual file
-    //       I.E. the file doesn't have enough space for the null char
-    memcpy(buffer + buffer_offset,
-           &(bib->observation_area),
-           4);
-    buffer_offset += 4;
-
-    // Note: 3 bytes allocated here, but only 2 in the actual file
-    //       I.E. the file doesn't have enough space for the null char
-    memcpy(buffer + buffer_offset,
-           &(bib->other_observation_info),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->observation_timeline),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->observation_start_time),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->observation_end_time),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->file_creation_time),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->total_header_length),
-           4);
-    buffer_offset += 4;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->total_data_length),
-           4);
-    buffer_offset += 4;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->quality_flag_1),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->quality_flag_2),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->quality_flag_3),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->quality_flag_4),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->file_format_version),
-           32);
-    buffer_offset += 32;
-
-    memcpy(buffer + buffer_offset,
-           &(bib->filename),
-           128);
-    buffer_offset += 128;
-
-    memcpy(buffer + buffer_offset,
-           bib->spare,
-           bib->spare_length);
-
-    fseek( fp,
-           header_offset,
-           SEEK_SET);
-    fwrite(buffer,
-           sizeof(uint8_t) * bib->block_length,
-           1,
-           fp);
-    free(buffer);
-}
-
-
-
-void print_basic_information_block(BIB* bib)
-{
-    printf("Basic Information Block:\n\n"
-           "    Block number           : %u\n"
-           "    Block length (bytes)   : %u\n"
-           "    Total header blocks    : %u\n"
-           "    Byte order             : %u\n"
-           "    Satellite name         : %s\n"
-           "    Processing Center      : %s\n"
-           "    Observation area       : %s\n"
-           "    Other Observation info : %s\n"
-           "    Observation timeline   : %.4u\n"
-           "    Observation start time : %f (mjd)\n"
-           "    Observation end time   : %f (mjd)\n"
-           "    File creation time     : %f (mjd)\n"
-           "    Total header length    : %u\n"
-           "    Total data length      : %u\n"
-           "    Quality Flag 1         : %u\n"
-           "    Quality Flag 2         : %u\n"
-           "    Quality Flag 3         : %u\n"
-           "    Quality Flag 4         : %u\n"
-           "    File format version    : %s\n"
-           "    Filename               : %s\n"
-           "    Spare length (bytes)   : %lu\n"
-           "\n",
-           bib->header_block_number,
-           bib->block_length,
-           bib->total_header_blocks,
-           bib->byte_order,
-           bib->satellite_name,
-           bib->processing_center,
-           bib->observation_area,
-           bib->other_observation_info,
-           bib->observation_timeline,
-           bib->observation_start_time,
-           bib->observation_end_time,
-           bib->file_creation_time,
-           bib->total_header_length,
-           bib->total_data_length,
-           bib->quality_flag_1,
-           bib->quality_flag_2,
-           bib->quality_flag_3,
-           bib->quality_flag_4,
-           bib->file_format_version,
-           bib->filename,
-           sizeof(uint8_t) * bib->spare_length);
-}
-
-
-
-
-
-
-void deallocate_data_information_block(DIB* dib)
-{
-    if(dib->spare)
-        free(dib->spare);
-    free(dib);
-}
-
-
-
-void read_data_information_block(FILE*    fp,
-                                 DIB*     dib,
-                                 uint32_t header_offset)
+void _read_data_information_block(FILE*    fp,
+                                  DIB*     dib,
+                                  uint32_t header_offset)
 {
     // Read the block number/id and block size
     uint8_t  block_number = 0;
@@ -566,98 +600,9 @@ void read_data_information_block(FILE*    fp,
 
 
 
-void write_data_information_block(FILE*    fp,
-                                  DIB*     dib,
-                                  uint32_t header_offset)
-{
-    // Allocate a buffer to store data before writing to disk
-    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * dib->block_length);
-
-    uint32_t buffer_offset = 0;
-    memcpy(buffer + buffer_offset,
-           &(dib->header_block_number),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(dib->block_length),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(dib->bits_per_pixel),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(dib->number_of_columns),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(dib->number_of_rows),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(dib->compression_flag),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           dib->spare,
-           dib->spare_length);
-    buffer_offset += dib->spare_length;
-
-    fseek( fp,
-           header_offset,
-           SEEK_SET);
-    fwrite(buffer,
-           sizeof(uint8_t) * dib->block_length,
-           1,
-           fp);
-    free(buffer);
-}
-
-
-
-void print_data_information_block(DIB* dib)
-{
-    printf("Data Information Block:\n\n"
-           "    Block number          : %u\n"
-           "    Block length (bytes)  : %u\n"
-           "    Bits per pixel        : %u\n"
-           "    Number of columns (x) : %u\n"
-           "    Number of rows    (y) : %u\n"
-           "    Compression flag      : %u\n"
-           "    Spare length (bytes)  : %lu\n"
-           "\n",
-           dib->header_block_number,
-           dib->block_length,
-           dib->bits_per_pixel,
-           dib->number_of_columns,
-           dib->number_of_rows,
-           dib->compression_flag,
-           sizeof(uint8_t) * dib->spare_length);
-}
-
-
-
-
-
-
-void deallocate_projection_information_block(PIB* pib)
-{
-    if(pib->spare)
-        free(pib->spare);
-    free(pib);
-}
-
-
-
-void read_projection_information_block(FILE*    fp,
-                                       PIB*     pib,
-                                       uint32_t header_offset)
+void _read_projection_information_block(FILE*    fp,
+                                        PIB*     pib,
+                                        uint32_t header_offset)
 {
     // Read the block number/id and block size
     uint8_t  block_number = 0;
@@ -772,168 +717,9 @@ void read_projection_information_block(FILE*    fp,
 
 
 
-void write_projection_information_block(FILE*    fp,
-                                        PIB*     pib,
+void _read_navigation_information_block(FILE*    fp,
+                                        NIB*     nib, 
                                         uint32_t header_offset)
-{
-    // Allocate a buffer to store data before writing to disk
-    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * pib->block_length);
-
-    uint32_t buffer_offset = 0;
-    memcpy(buffer + buffer_offset,
-           &(pib->header_block_number),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->block_length),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->sub_lon),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->cfac),
-           4);
-    buffer_offset += 4;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->lfac),
-           4);
-    buffer_offset += 4;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->coff),
-           4);
-    buffer_offset += 4;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->loff),
-           4);
-    buffer_offset += 4;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->Rs),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->Req),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->Rpol),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->R1),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->R2),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->R3),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->Sd_coefficient),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->resampling_types),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(pib->resampling_size),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           pib->spare,
-           pib->spare_length);
-    buffer_offset += pib->spare_length;
-
-    fseek( fp,
-           header_offset,
-           SEEK_SET);
-    fwrite(buffer,
-           sizeof(uint8_t) * pib->block_length,
-           1,
-           fp);
-    free(buffer);
-}
-
-
-
-void print_projection_information_block(PIB* pib)
-{
-    printf("Projection Information Block:\n\n"
-           "    Block number          : %u\n"
-           "    Block length (bytes)  : %u\n"
-           "    Sub longitude         : %f\n"
-           "    Column scaling factor : %u\n"
-           "    Line scaling factor   : %u\n"
-           "    Column offset         : %f\n"
-           "    Line offset           : %f\n"
-           "    Rs                    : %f\n"
-           "    Req                   : %f\n"
-           "    Rpol                  : %f\n"
-           "    R1:                   : %f\n"
-           "    R2:                   : %f\n"
-           "    R3:                   : %f\n"
-           "    Sd coefficent:        : %f\n"
-           "    Resampling types      : %u\n"
-           "    Resampling sizes      : %u\n"
-           "    Spare length (bytes)  : %lu\n"
-           "\n",
-           pib->header_block_number,
-           pib->block_length,
-           pib->sub_lon,
-           pib->cfac,
-           pib->lfac,
-           pib->coff,
-           pib->loff,
-           pib->Rs,
-           pib->Req,
-           pib->Rpol,
-           pib->R1,
-           pib->R2,
-           pib->R3,
-           pib->Sd_coefficient,
-           pib->resampling_types,
-           pib->resampling_size,
-           sizeof(uint8_t) * pib->spare_length);
-}
-
-
-
-
-
-
-void deallocate_navigation_information_block(NIB* nib)
-{
-    if(nib->spare)
-        free(nib->spare);
-    free(nib);
-}
-
-
-
-void read_navigation_information_block(FILE*    fp,
-                                       NIB*     nib, 
-                                       uint32_t header_offset)
 {
     // Read the block number/id and block size
     uint8_t  block_number = 0;
@@ -1038,151 +824,9 @@ void read_navigation_information_block(FILE*    fp,
 
 
 
-void write_navigation_information_block(FILE*    fp,
-                                        NIB*     nib,
-                                        uint32_t header_offset)
-{
-    // Allocate a buffer to store data before writing to disk
-    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * nib->block_length);
-
-    uint32_t buffer_offset = 0;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->header_block_number),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->block_length),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->navigation_information_time),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->ssp_longitude),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->ssp_latitude),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->earth_center_to_satellite),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->nadir_longitude),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->nadir_latitude),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->sun_position_x),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->sun_position_y),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->sun_position_z),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->moon_position_x),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->moon_position_y),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           &(nib->moon_position_z),
-           8);
-    buffer_offset += 8;
-
-    memcpy(buffer + buffer_offset,
-           nib->spare,
-           nib->spare_length);
-    buffer_offset += nib->spare_length;
-
-    fseek( fp,
-           header_offset,
-           SEEK_SET);
-    fwrite(buffer,
-           sizeof(uint8_t) * nib->block_length,
-           1,
-           fp);
-    free(buffer);
-}
-
-
-
-void print_navigation_information_block(NIB* nib)
-{
-    printf("Navigation Information Block:\n\n"
-           "    Block number                   : %u\n"
-           "    Block length (bytes)           : %u\n"
-           "    Navigation information time    : %f\n"
-           "    Sub-satellite point longitude  : %f\n"
-           "    Sub-satellite point latitude   : %f\n"
-           "    Earth center to satellite      : %f\n"
-           "    Nadir longitude                : %f\n"
-           "    Nadir latitude                 : %f\n"
-           "    Sun's Position (x,y,z)(J2000)  : %f, %f, %f\n"
-           "    Moon's Position (x,y,z)(J2000) : %f, %f, %f\n"
-           "    Spare length (bytes)           : %lu\n"
-           "\n",
-           nib->header_block_number,
-           nib->block_length,
-           nib->navigation_information_time,
-           nib->ssp_longitude,
-           nib->ssp_latitude,
-           nib->earth_center_to_satellite,
-           nib->nadir_longitude,
-           nib->nadir_latitude,
-           nib->sun_position_x,
-           nib->sun_position_y,
-           nib->sun_position_z,
-           nib->moon_position_x,
-           nib->moon_position_y,
-           nib->moon_position_z,
-           sizeof(uint8_t) * nib->spare_length);
-}
-
-
-
-
-
-
-void deallocate_calibration_information_block(CIB* cib)
-{
-    if(cib->spare)
-        free(cib->spare);
-    free(cib);
-}
-
-
-
-void read_calibration_information_block(FILE*    fp,
-                                        CIB*     cib,
-                                        uint32_t header_offset)
+void _read_calibration_information_block(FILE*    fp,
+                                         CIB*     cib,
+                                         uint32_t header_offset)
 {
     // Read the block number/id and block size
     uint8_t  block_number = 0;
@@ -1334,9 +978,867 @@ void read_calibration_information_block(FILE*    fp,
 
 
 
-void write_calibration_information_block(FILE*    fp,
-                                         CIB*     cib,
+void _read_inter_calibration_information_block(FILE*    fp,
+                                               IIB*     iib,
+                                               uint32_t header_offset)
+{
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    iib->header_block_number = block_number;
+    iib->block_length        = block_length;
+    
+    uint32_t buffer_offset = 3;
+    memcpy(&(iib->gsics_calibration_intercept),
+           buffer + buffer_offset,
+           8);
+    buffer_offset += 8;
+
+    memcpy(&(iib->gsics_calibration_slope),
+           buffer + buffer_offset,
+           8);
+    buffer_offset += 8;
+
+    memcpy(&(iib->gsics_calibration_quadratic),
+           buffer + buffer_offset,
+           8);
+    buffer_offset += 8;
+
+    memcpy(&(iib->radiance_bias),
+           buffer + buffer_offset,
+           8);
+    buffer_offset += 8;
+
+    memcpy(&(iib->radiance_bias_uncertainty),
+           buffer + buffer_offset,
+           8);
+    buffer_offset += 8;
+
+    memcpy(&(iib->radiance),
+           buffer + buffer_offset,
+           8);
+    buffer_offset += 8;
+
+    memcpy(&(iib->gsics_calibration_validity_start),
+           buffer + buffer_offset,
+           8);
+    buffer_offset += 8;
+
+    memcpy(&(iib->gsics_calibration_validity_end),
+           buffer + buffer_offset,
+           8);
+    buffer_offset += 8;
+
+    memcpy(&(iib->gsics_radiance_validity_upper_limit),
+           buffer + buffer_offset,
+           4);
+    buffer_offset += 4;
+
+    memcpy(&(iib->gsics_radiance_validity_lower_limit),
+           buffer + buffer_offset,
+           4);
+    buffer_offset += 4;
+
+    memcpy(&(iib->gsics_correction_filename),
+           buffer + buffer_offset,
+           128);
+    buffer_offset += 128;
+
+    iib->spare_length = iib->block_length - buffer_offset;
+    iib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * iib->spare_length);
+    memcpy(iib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * iib->spare_length);
+
+    free(buffer);
+}
+
+
+
+void _read_segment_information_block(FILE*    fp,
+                                     SIB*     sib,
+                                     uint32_t header_offset)
+{
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    sib->header_block_number = block_number;
+    sib->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
+    memcpy(&(sib->total_segments),
+           buffer + buffer_offset,
+           1);
+    buffer_offset += 1;
+
+    memcpy(&(sib->segment_number),
+           buffer + buffer_offset,
+           1);
+    buffer_offset += 1;
+
+    memcpy(&(sib->segment_first_line_number),
+           buffer + buffer_offset,
+           2);
+    buffer_offset += 2;
+
+    sib->spare_length = sib->block_length - buffer_offset;
+    sib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * sib->spare_length);
+    memcpy(sib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * sib->spare_length);
+
+    free(buffer);
+}
+
+
+
+void _read_navigation_correction_information_block(FILE*    fp,
+                                                   NCIB*    ncib,
+                                                   uint32_t header_offset)
+{
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    ncib->header_block_number = block_number;
+    ncib->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
+    memcpy(&(ncib->center_column_of_rotation),
+           buffer + buffer_offset,
+           4);
+    buffer_offset += 4;
+
+    memcpy(&(ncib->center_line_of_rotation),
+           buffer + buffer_offset,
+           4);
+    buffer_offset += 4;
+
+    memcpy(&(ncib->rotational_correction),
+           buffer + buffer_offset,
+           8);
+    buffer_offset += 8;
+
+    memcpy(&(ncib->number_of_corrections),
+           buffer + buffer_offset,
+           2);
+    buffer_offset += 2;
+
+    // Allocate the required memory
+    if(ncib->number_of_corrections > 0)
+    {
+        ncib->line_number_after_rotation = 
+            (uint16_t*)malloc(sizeof(uint16_t) * ncib->number_of_corrections);
+        ncib->shift_for_column_direction = 
+            (float*)malloc(sizeof(float) * ncib->number_of_corrections);
+        ncib->shift_for_line_direction = 
+            (float*)malloc(sizeof(float) * ncib->number_of_corrections);
+        
+        for(uint32_t i = 0; i < ncib->number_of_corrections; ++i)
+        {
+            memcpy(ncib->line_number_after_rotation + i,
+                   buffer + buffer_offset,
+                   2);
+            buffer_offset += 2;
+
+            memcpy(ncib->shift_for_column_direction + i,
+                   buffer + buffer_offset,
+                   4);
+            buffer_offset += 4;
+
+            memcpy(ncib->shift_for_line_direction + i,
+                   buffer + buffer_offset,
+                   4);
+            buffer_offset += 4;
+        }
+    }
+
+    ncib->spare_length = ncib->block_length - buffer_offset;
+    ncib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * ncib->spare_length);
+    memcpy(ncib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * ncib->spare_length);
+
+    free(buffer);
+}
+
+
+
+void _read_observation_time_information_block(FILE*    fp,
+                                              OTIB*    otib,
+                                              uint32_t header_offset)
+{
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    otib->header_block_number = block_number;
+    otib->block_length        = block_length;
+    
+    uint32_t buffer_offset = 3;
+
+    memcpy(&(otib->number_of_observation_times),
+           buffer + buffer_offset,
+           2);
+    buffer_offset += 2;
+
+    if(otib->number_of_observation_times > 0)
+    {
+        otib->observation_time_line_number = 
+            (uint16_t*)malloc(sizeof(uint16_t) * otib->number_of_observation_times);
+        otib->observation_time = 
+            (double*)malloc(sizeof(double) * otib->number_of_observation_times);
+
+        for(uint32_t i = 0; i < otib->number_of_observation_times; ++i)
+        {
+            memcpy(otib->observation_time_line_number + i,
+                   buffer + buffer_offset,
+                   2);
+            buffer_offset += 2;
+
+            memcpy(otib->observation_time + i,
+                   buffer + buffer_offset,
+                   8);
+            buffer_offset += 8;
+        }
+    }
+
+    otib->spare_length = otib->block_length - buffer_offset;
+    otib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * otib->spare_length);
+    memcpy(otib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * otib->spare_length);
+
+    free(buffer);
+}
+
+
+
+void _read_error_information_block(FILE*    fp,
+                                   EIB*     eib,
+                                   uint32_t header_offset)
+{
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint32_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint32_t),
+          1,
+          fp);
+
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    eib->header_block_number = block_number;
+    eib->block_length        = block_length;
+
+    uint32_t buffer_offset = 5;
+    memcpy(&(eib->number_of_error_information_data),
+           buffer + buffer_offset,
+           2);
+    buffer_offset += 2;
+
+    if(eib->number_of_error_information_data > 0)
+    {
+        eib->error_line_number = 
+            (uint16_t*)malloc(sizeof(uint16_t) * eib->number_of_error_information_data);
+        eib->error_pixels_for_line = 
+            (uint16_t*)malloc(sizeof(uint16_t) * eib->number_of_error_information_data);
+
+        for(uint32_t i = 0; i < eib->number_of_error_information_data; ++i)
+        {
+            memcpy(eib->error_line_number + i,
+                   buffer + buffer_offset,
+                   2);
+            buffer_offset += 2;
+
+            memcpy(eib->error_pixels_for_line + i,
+                   buffer + buffer_offset,
+                   2);
+            buffer_offset += 2;
+        }
+    }
+ 
+    eib->spare_length = eib->block_length - buffer_offset;
+    eib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * eib->spare_length);
+    memcpy(eib->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * eib->spare_length);
+
+    free(buffer);
+}
+
+
+
+void _read_spare_block(FILE*    fp,
+                       SB*      sb,
+                       uint32_t header_offset)
+{
+    // Read the block number/id and block size
+    uint8_t  block_number = 0;
+    uint16_t block_length = 0;
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(&block_number,
+          sizeof(uint8_t),
+          1,
+          fp);
+    fread(&block_length,
+          sizeof(uint16_t),
+          1,
+          fp);
+
+    // Allocate a buffer
+    uint8_t* buffer = (uint8_t*)calloc(1,
+                                       block_length);
+
+    // Read in the whole block
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(buffer,
+          block_length,
+          1,
+          fp);
+
+    sb->header_block_number = block_number;
+    sb->block_length        = block_length;
+
+    uint32_t buffer_offset = 3;
+    sb->spare_length       = sb->block_length - buffer_offset;
+    sb->spare              = (uint8_t*)malloc(sizeof(uint8_t) * sb->spare_length);
+    memcpy(sb->spare,
+           buffer + buffer_offset,
+           sizeof(uint8_t) * sb->spare_length);
+
+    free(buffer);
+}
+
+
+
+void _read_data_block(FILE*    fp,
+                      DB*      db,
+                      uint32_t header_offset,
+                      uint32_t length)
+{
+    db->data   = (uint16_t*)malloc(sizeof(uint16_t) * length);
+    db->length = length;
+
+    fseek(fp,
+          header_offset,
+          SEEK_SET);
+    fread(db->data,
+          sizeof(uint16_t) * db->length,
+          1,
+          fp);
+}
+
+
+
+void _write_basic_information_block(FILE*    fp,
+                                    BIB*     bib,
+                                    uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * bib->block_length);
+
+    uint32_t buffer_offset = 0;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->total_header_blocks),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->byte_order),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->satellite_name),
+           16);
+    buffer_offset += 16;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->processing_center),
+           16);
+    buffer_offset += 16;
+
+    // Note: 5 bytes allocated here, but only 4 in the actual file
+    //       I.E. the file doesn't have enough space for the null char
+    memcpy(buffer + buffer_offset,
+           &(bib->observation_area),
+           4);
+    buffer_offset += 4;
+
+    // Note: 3 bytes allocated here, but only 2 in the actual file
+    //       I.E. the file doesn't have enough space for the null char
+    memcpy(buffer + buffer_offset,
+           &(bib->other_observation_info),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->observation_timeline),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->observation_start_time),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->observation_end_time),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->file_creation_time),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->total_header_length),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->total_data_length),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->quality_flag_1),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->quality_flag_2),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->quality_flag_3),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->quality_flag_4),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->file_format_version),
+           32);
+    buffer_offset += 32;
+
+    memcpy(buffer + buffer_offset,
+           &(bib->filename),
+           128);
+    buffer_offset += 128;
+
+    memcpy(buffer + buffer_offset,
+           bib->spare,
+           bib->spare_length);
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * bib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
+void _write_data_information_block(FILE*    fp,
+                                   DIB*     dib,
+                                   uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * dib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(dib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->bits_per_pixel),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->number_of_columns),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->number_of_rows),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(dib->compression_flag),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           dib->spare,
+           dib->spare_length);
+    buffer_offset += dib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * dib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
+void _write_projection_information_block(FILE*    fp,
+                                         PIB*     pib,
                                          uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * pib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(pib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->sub_lon),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->cfac),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->lfac),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->coff),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->loff),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->Rs),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->Req),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->Rpol),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->R1),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->R2),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->R3),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->Sd_coefficient),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->resampling_types),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(pib->resampling_size),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           pib->spare,
+           pib->spare_length);
+    buffer_offset += pib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * pib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
+void _write_navigation_information_block(FILE*    fp,
+                                         NIB*     nib,
+                                         uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * nib->block_length);
+
+    uint32_t buffer_offset = 0;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->navigation_information_time),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->ssp_longitude),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->ssp_latitude),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->earth_center_to_satellite),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->nadir_longitude),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->nadir_latitude),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->sun_position_x),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->sun_position_y),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->sun_position_z),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->moon_position_x),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->moon_position_y),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           &(nib->moon_position_z),
+           8);
+    buffer_offset += 8;
+
+    memcpy(buffer + buffer_offset,
+           nib->spare,
+           nib->spare_length);
+    buffer_offset += nib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * nib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
+void _write_calibration_information_block(FILE*    fp,
+                                          CIB*     cib,
+                                          uint32_t header_offset)
 {
     // Allocate a buffer to store data before writing to disk
     uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * cib->block_length);
@@ -1475,205 +1977,9 @@ void write_calibration_information_block(FILE*    fp,
 
 
 
-void print_calibration_information_block(CIB* cib)
-{
-    if(cib->band_number >= 7)
-    {
-        printf("Calibration Information Block:\n\n"
-               "    Block number                : %u\n"
-               "    Block length (bytes)        : %u\n"
-               "    band number                 : %u\n"
-               "    Central wave length         : %f\n"
-               "    Bits per pixel              : %u\n"
-               "    Error pixel value           : %u\n"
-               "    Outside scan pixel value    : %u\n"
-               "    Count to radiance slope     : %f\n"
-               "    Count to radiance intercept : %f\n"
-               "    IR radiance to BT c0        : %f\n"
-               "    IR radiance to BT c1        : %f\n"
-               "    IR radiance to BT c2        : %f\n"
-               "    IR BT to radiance c0        : %f\n"
-               "    IR BT to radiance c1        : %f\n"
-               "    IR BT to radiance c2        : %f\n"
-               "    Speed of light (c)          : %f\n"
-               "    Planck constant (h)         : %f\n"
-               "    Boltzmann constant (k)      : %f\n"
-               "    Spare length (bytes)        : %lu\n"
-               "\n",
-               cib->header_block_number,
-               cib->block_length,
-               cib->band_number,
-               cib->central_wave_length,
-               cib->bits_per_pixel,
-               cib->error_pixel_value,
-               cib->outside_scan_pixel_value,
-               cib->count_radiance_slope,
-               cib->count_radiance_intercept,
-               cib->ir_rad_to_bt_c0,
-               cib->ir_rad_to_bt_c1,
-               cib->ir_rad_to_bt_c2,
-               cib->ir_bt_to_rad_c0,
-               cib->ir_bt_to_rad_c1,
-               cib->ir_bt_to_rad_c2,
-               cib->ir_c,
-               cib->ir_h,
-               cib->ir_k,
-               sizeof(uint8_t) * cib->spare_length);
-    }
-    else
-    {
-        printf("Calibration Information Block:\n\n"
-               "    Block number                               : %u\n"
-               "    Block length (bytes)                       : %u\n"
-               "    band number                                : %u\n"
-               "    Central wave length                        : %f\n"
-               "    Bits per pixel                             : %u\n"
-               "    Error pixel value                          : %u\n"
-               "    Outside scan pixel value                   : %u\n"
-               "    Count to radiance slope                    : %f\n"
-               "    Count to radiance intercept                : %f\n"
-               "    VIS/IR c'                                  : %f\n"
-               "    VIS/IR calibration update time (mjd)       : %f\n"
-               "    VIS/IR updated count to radiance slope     : %f\n"
-               "    VIS/IR updated count to radiance intercept : %f\n"
-               "    Spare length (bytes)                       : %lu\n"
-               "\n",
-               cib->header_block_number,
-               cib->block_length,
-               cib->band_number,
-               cib->central_wave_length,
-               cib->bits_per_pixel,
-               cib->error_pixel_value,
-               cib->outside_scan_pixel_value,
-               cib->count_radiance_slope,
-               cib->count_radiance_intercept,
-               cib->vis_nir_c_prime,
-               cib->vis_nir_calib_update_time,
-               cib->vis_nir_count_radiance_slope,
-               cib->vis_nir_count_radiance_intercept,
-               sizeof(uint8_t) * cib->spare_length);
-    }
-}
-
-
-
-
-
-
-void deallocate_inter_calibration_information_block(IIB* iib)
-{
-    if(iib->spare)
-        free(iib->spare);
-    free(iib);
-}
-
-
-
-void read_inter_calibration_information_block(FILE*    fp,
-                                              IIB*     iib,
-                                              uint32_t header_offset)
-{
-    // Read the block number/id and block size
-    uint8_t  block_number = 0;
-    uint16_t block_length = 0;
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(&block_number,
-          sizeof(uint8_t),
-          1,
-          fp);
-    fread(&block_length,
-          sizeof(uint16_t),
-          1,
-          fp);
-
-    // Allocate a buffer
-    uint8_t* buffer = (uint8_t*)calloc(1,
-                                       block_length);
-
-    // Read in the whole block
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(buffer,
-          block_length,
-          1,
-          fp);
-
-    iib->header_block_number = block_number;
-    iib->block_length        = block_length;
-    
-    uint32_t buffer_offset = 3;
-    memcpy(&(iib->gsics_calibration_intercept),
-           buffer + buffer_offset,
-           8);
-    buffer_offset += 8;
-
-    memcpy(&(iib->gsics_calibration_slope),
-           buffer + buffer_offset,
-           8);
-    buffer_offset += 8;
-
-    memcpy(&(iib->gsics_calibration_quadratic),
-           buffer + buffer_offset,
-           8);
-    buffer_offset += 8;
-
-    memcpy(&(iib->radiance_bias),
-           buffer + buffer_offset,
-           8);
-    buffer_offset += 8;
-
-    memcpy(&(iib->radiance_bias_uncertainty),
-           buffer + buffer_offset,
-           8);
-    buffer_offset += 8;
-
-    memcpy(&(iib->radiance),
-           buffer + buffer_offset,
-           8);
-    buffer_offset += 8;
-
-    memcpy(&(iib->gsics_calibration_validity_start),
-           buffer + buffer_offset,
-           8);
-    buffer_offset += 8;
-
-    memcpy(&(iib->gsics_calibration_validity_end),
-           buffer + buffer_offset,
-           8);
-    buffer_offset += 8;
-
-    memcpy(&(iib->gsics_radiance_validity_upper_limit),
-           buffer + buffer_offset,
-           4);
-    buffer_offset += 4;
-
-    memcpy(&(iib->gsics_radiance_validity_lower_limit),
-           buffer + buffer_offset,
-           4);
-    buffer_offset += 4;
-
-    memcpy(&(iib->gsics_correction_filename),
-           buffer + buffer_offset,
-           128);
-    buffer_offset += 128;
-
-    iib->spare_length = iib->block_length - buffer_offset;
-    iib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * iib->spare_length);
-    memcpy(iib->spare,
-           buffer + buffer_offset,
-           sizeof(uint8_t) * iib->spare_length);
-
-    free(buffer);
-}
-
-
-
-void write_inter_calibration_information_block(FILE*    fp,
-                                               IIB*     iib,
-                                               uint32_t header_offset)
+void _write_inter_calibration_information_block(FILE*    fp,
+                                                IIB*     iib,
+                                                uint32_t header_offset)
 {
     // Allocate a buffer to store data before writing to disk
     uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * iib->block_length);
@@ -1761,119 +2067,9 @@ void write_inter_calibration_information_block(FILE*    fp,
 
 
 
-void print_inter_calibration_information_block(IIB* iib)
-{
-    printf("Inter-calibration Information Block:\n\n"
-           "    Block number                                : %u\n"
-           "    Block length (bytes)                        : %u\n"
-           "    GSICS calibration intercept                 : %f\n"
-           "    GSICS calibration slope                     : %f\n"
-           "    GSICS calibration quadratic                 : %f\n"
-           "    Radiance bias (standard scene)              : %f\n"
-           "    Radiance bias uncertainty (standard scene)  : %f\n"
-           "    Radiance (standard scene)                   : %f\n"
-           "    GSICS calibration validity start time (mjd) : %f\n"
-           "    GSICS calibration validity end time   (mjd) : %f\n"
-           "    GSICS calibration validity upper limit      : %f\n"
-           "    GSICS calibration validity lower limit      : %f\n"
-           "    GSICS calibration correction filename       : %s\n"
-           "    Spare length (bytes)                        : %lu\n"
-           "\n",
-           iib->header_block_number,
-           iib->block_length,
-           iib->gsics_calibration_intercept,
-           iib->gsics_calibration_slope,
-           iib->gsics_calibration_quadratic,
-           iib->radiance_bias,
-           iib->radiance_bias_uncertainty,
-           iib->radiance,
-           iib->gsics_calibration_validity_start,
-           iib->gsics_calibration_validity_end,
-           iib->gsics_radiance_validity_upper_limit,
-           iib->gsics_radiance_validity_lower_limit,
-           iib->gsics_correction_filename,
-           sizeof(uint8_t) * iib->spare_length);
-}
-
-
-
-
-
-
-void deallocate_segment_information_block(SIB* sib)
-{
-    if(sib->spare)
-        free(sib->spare);
-    free(sib);
-}
-
-
-
-void read_segment_information_block(FILE*    fp,
-                                    SIB*     sib,
-                                    uint32_t header_offset)
-{
-    // Read the block number/id and block size
-    uint8_t  block_number = 0;
-    uint16_t block_length = 0;
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(&block_number,
-          sizeof(uint8_t),
-          1,
-          fp);
-    fread(&block_length,
-          sizeof(uint16_t),
-          1,
-          fp);
-
-    // Allocate a buffer
-    uint8_t* buffer = (uint8_t*)calloc(1,
-                                       block_length);
-
-    // Read in the whole block
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(buffer,
-          block_length,
-          1,
-          fp);
-
-    sib->header_block_number = block_number;
-    sib->block_length        = block_length;
-
-    uint32_t buffer_offset = 3;
-    memcpy(&(sib->total_segments),
-           buffer + buffer_offset,
-           1);
-    buffer_offset += 1;
-
-    memcpy(&(sib->segment_number),
-           buffer + buffer_offset,
-           1);
-    buffer_offset += 1;
-
-    memcpy(&(sib->segment_first_line_number),
-           buffer + buffer_offset,
-           2);
-    buffer_offset += 2;
-
-    sib->spare_length = sib->block_length - buffer_offset;
-    sib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * sib->spare_length);
-    memcpy(sib->spare,
-           buffer + buffer_offset,
-           sizeof(uint8_t) * sib->spare_length);
-
-    free(buffer);
-}
-
-
-
-void write_segment_information_block(FILE*    fp,
-                                     SIB*     sib,
-                                     uint32_t header_offset)
+void _write_segment_information_block(FILE*    fp,
+                                      SIB*     sib,
+                                      uint32_t header_offset)
 {
     // Allocate a buffer to store data before writing to disk
     uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * sib->block_length);
@@ -1921,146 +2117,9 @@ void write_segment_information_block(FILE*    fp,
 
 
 
-void print_segment_information_block(SIB* sib)
-{
-    printf("Segment Information Block:\n\n"
-           "    Block number                 : %u\n"
-           "    Block length (bytes)         : %u\n"
-           "    Total segments               : %u\n"
-           "    Segment number               : %u\n"
-           "    First line number of segment : %u\n"
-           "    Spare length (bytes)         : %lu\n"
-           "\n",
-           sib->header_block_number,
-           sib->block_length,
-           sib->total_segments,
-           sib->segment_number,
-           sib->segment_first_line_number,
-           sizeof(uint8_t) * sib->spare_length);
-}
-
-
-
-
-
-void deallocate_navigation_correction_information_block(NCIB* ncib)
-{
-    if(ncib->line_number_after_rotation)
-        free(ncib->line_number_after_rotation);
-
-    if(ncib->shift_for_column_direction)
-        free(ncib->shift_for_column_direction);
-
-    if(ncib->shift_for_line_direction)
-        free(ncib->shift_for_line_direction);
-
-    if(ncib->spare)
-        free(ncib->spare);
-
-    free(ncib);
-}
-
-
-
-void read_navigation_correction_information_block(FILE*    fp,
-                                                  NCIB*    ncib,
-                                                  uint32_t header_offset)
-{
-    // Read the block number/id and block size
-    uint8_t  block_number = 0;
-    uint16_t block_length = 0;
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(&block_number,
-          sizeof(uint8_t),
-          1,
-          fp);
-    fread(&block_length,
-          sizeof(uint16_t),
-          1,
-          fp);
-
-    // Allocate a buffer
-    uint8_t* buffer = (uint8_t*)calloc(1,
-                                       block_length);
-
-    // Read in the whole block
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(buffer,
-          block_length,
-          1,
-          fp);
-
-    ncib->header_block_number = block_number;
-    ncib->block_length        = block_length;
-
-    uint32_t buffer_offset = 3;
-    memcpy(&(ncib->center_column_of_rotation),
-           buffer + buffer_offset,
-           4);
-    buffer_offset += 4;
-
-    memcpy(&(ncib->center_line_of_rotation),
-           buffer + buffer_offset,
-           4);
-    buffer_offset += 4;
-
-    memcpy(&(ncib->rotational_correction),
-           buffer + buffer_offset,
-           8);
-    buffer_offset += 8;
-
-    memcpy(&(ncib->number_of_corrections),
-           buffer + buffer_offset,
-           2);
-    buffer_offset += 2;
-
-    // Allocate the required memory
-    if(ncib->number_of_corrections > 0)
-    {
-        ncib->line_number_after_rotation = 
-            (uint16_t*)malloc(sizeof(uint16_t) * ncib->number_of_corrections);
-        ncib->shift_for_column_direction = 
-            (float*)malloc(sizeof(float) * ncib->number_of_corrections);
-        ncib->shift_for_line_direction = 
-            (float*)malloc(sizeof(float) * ncib->number_of_corrections);
-        
-        for(uint32_t i = 0; i < ncib->number_of_corrections; ++i)
-        {
-            memcpy(ncib->line_number_after_rotation + i,
-                   buffer + buffer_offset,
-                   2);
-            buffer_offset += 2;
-
-            memcpy(ncib->shift_for_column_direction + i,
-                   buffer + buffer_offset,
-                   4);
-            buffer_offset += 4;
-
-            memcpy(ncib->shift_for_line_direction + i,
-                   buffer + buffer_offset,
-                   4);
-            buffer_offset += 4;
-        }
-    }
-
-    ncib->spare_length = ncib->block_length - buffer_offset;
-    ncib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * ncib->spare_length);
-    memcpy(ncib->spare,
-           buffer + buffer_offset,
-           sizeof(uint8_t) * ncib->spare_length);
-
-    free(buffer);
-}
-
-
-
-void write_navigation_correction_information_block(FILE*    fp,
-                                                   NCIB*    ncib,
-                                                   uint32_t header_offset)
+void _write_navigation_correction_information_block(FILE*    fp,
+                                                    NCIB*    ncib,
+                                                    uint32_t header_offset)
 {
     // Allocate a buffer to store data before writing to disk
     uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * ncib->block_length);
@@ -2131,7 +2190,449 @@ void write_navigation_correction_information_block(FILE*    fp,
 
 
 
-void print_navigation_correction_information_block(NCIB* ncib)
+void _write_observation_time_information_block(FILE*    fp,
+                                               OTIB*    otib,
+                                               uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * otib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(otib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(otib->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           &(otib->number_of_observation_times),
+           2);
+    buffer_offset += 2;
+
+    for(uint32_t i = 0; i < otib->number_of_observation_times; ++i)
+    {
+        memcpy(buffer + buffer_offset,
+               otib->observation_time_line_number + i,
+               2);
+        buffer_offset += 2;
+
+        memcpy(buffer + buffer_offset,
+               otib->observation_time + i,
+               8);
+        buffer_offset += 8;
+    }
+
+    memcpy(buffer + buffer_offset,
+           otib->spare,
+           otib->spare_length);
+    buffer_offset += otib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * otib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
+void _write_error_information_block(FILE*    fp,
+                                    EIB*     eib,
+                                    uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * eib->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(eib->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(eib->block_length),
+           4);
+    buffer_offset += 4;
+
+    memcpy(buffer + buffer_offset,
+           &(eib->number_of_error_information_data),
+           2);
+    buffer_offset += 2;
+
+    for(uint32_t i = 0; i < eib->number_of_error_information_data; ++i)
+    {
+        memcpy(buffer + buffer_offset,
+               eib->error_line_number + i,
+               2);
+        buffer_offset += 2;
+
+        memcpy(buffer + buffer_offset,
+               eib->error_pixels_for_line + i,
+               2);
+        buffer_offset += 2;
+    }
+
+    memcpy(buffer + buffer_offset,
+           eib->spare,
+           eib->spare_length);
+    buffer_offset += eib->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * eib->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
+void _write_spare_block(FILE*    fp,
+                        SB*      sb,
+                        uint32_t header_offset)
+{
+    // Allocate a buffer to store data before writing to disk
+    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * sb->block_length);
+
+    uint32_t buffer_offset = 0;
+    memcpy(buffer + buffer_offset,
+           &(sb->header_block_number),
+           1);
+    buffer_offset += 1;
+
+    memcpy(buffer + buffer_offset,
+           &(sb->block_length),
+           2);
+    buffer_offset += 2;
+
+    memcpy(buffer + buffer_offset,
+           sb->spare,
+           sb->spare_length);
+    buffer_offset += sb->spare_length;
+
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(buffer,
+           sizeof(uint8_t) * sb->block_length,
+           1,
+           fp);
+    free(buffer);
+}
+
+
+
+void _write_data_block(FILE*    fp,
+                       DB*      db,
+                       uint32_t header_offset)
+{
+    fseek( fp,
+           header_offset,
+           SEEK_SET);
+    fwrite(db->data,
+           sizeof(uint16_t) * db->length,
+           1,
+           fp);
+}
+
+
+
+void _print_basic_information_block(BIB* bib)
+{
+    printf("Basic Information Block:\n\n"
+           "    Block number           : %u\n"
+           "    Block length (bytes)   : %u\n"
+           "    Total header blocks    : %u\n"
+           "    Byte order             : %u\n"
+           "    Satellite name         : %s\n"
+           "    Processing Center      : %s\n"
+           "    Observation area       : %s\n"
+           "    Other Observation info : %s\n"
+           "    Observation timeline   : %.4u\n"
+           "    Observation start time : %f (mjd)\n"
+           "    Observation end time   : %f (mjd)\n"
+           "    File creation time     : %f (mjd)\n"
+           "    Total header length    : %u\n"
+           "    Total data length      : %u\n"
+           "    Quality Flag 1         : %u\n"
+           "    Quality Flag 2         : %u\n"
+           "    Quality Flag 3         : %u\n"
+           "    Quality Flag 4         : %u\n"
+           "    File format version    : %s\n"
+           "    Filename               : %s\n"
+           "    Spare length (bytes)   : %lu\n"
+           "\n",
+           bib->header_block_number,
+           bib->block_length,
+           bib->total_header_blocks,
+           bib->byte_order,
+           bib->satellite_name,
+           bib->processing_center,
+           bib->observation_area,
+           bib->other_observation_info,
+           bib->observation_timeline,
+           bib->observation_start_time,
+           bib->observation_end_time,
+           bib->file_creation_time,
+           bib->total_header_length,
+           bib->total_data_length,
+           bib->quality_flag_1,
+           bib->quality_flag_2,
+           bib->quality_flag_3,
+           bib->quality_flag_4,
+           bib->file_format_version,
+           bib->filename,
+           sizeof(uint8_t) * bib->spare_length);
+}
+
+
+
+void _print_data_information_block(DIB* dib)
+{
+    printf("Data Information Block:\n\n"
+           "    Block number          : %u\n"
+           "    Block length (bytes)  : %u\n"
+           "    Bits per pixel        : %u\n"
+           "    Number of columns (x) : %u\n"
+           "    Number of rows    (y) : %u\n"
+           "    Compression flag      : %u\n"
+           "    Spare length (bytes)  : %lu\n"
+           "\n",
+           dib->header_block_number,
+           dib->block_length,
+           dib->bits_per_pixel,
+           dib->number_of_columns,
+           dib->number_of_rows,
+           dib->compression_flag,
+           sizeof(uint8_t) * dib->spare_length);
+}
+
+
+
+void _print_projection_information_block(PIB* pib)
+{
+    printf("Projection Information Block:\n\n"
+           "    Block number          : %u\n"
+           "    Block length (bytes)  : %u\n"
+           "    Sub longitude         : %f\n"
+           "    Column scaling factor : %u\n"
+           "    Line scaling factor   : %u\n"
+           "    Column offset         : %f\n"
+           "    Line offset           : %f\n"
+           "    Rs                    : %f\n"
+           "    Req                   : %f\n"
+           "    Rpol                  : %f\n"
+           "    R1:                   : %f\n"
+           "    R2:                   : %f\n"
+           "    R3:                   : %f\n"
+           "    Sd coefficent:        : %f\n"
+           "    Resampling types      : %u\n"
+           "    Resampling sizes      : %u\n"
+           "    Spare length (bytes)  : %lu\n"
+           "\n",
+           pib->header_block_number,
+           pib->block_length,
+           pib->sub_lon,
+           pib->cfac,
+           pib->lfac,
+           pib->coff,
+           pib->loff,
+           pib->Rs,
+           pib->Req,
+           pib->Rpol,
+           pib->R1,
+           pib->R2,
+           pib->R3,
+           pib->Sd_coefficient,
+           pib->resampling_types,
+           pib->resampling_size,
+           sizeof(uint8_t) * pib->spare_length);
+}
+
+
+
+void _print_navigation_information_block(NIB* nib)
+{
+    printf("Navigation Information Block:\n\n"
+           "    Block number                   : %u\n"
+           "    Block length (bytes)           : %u\n"
+           "    Navigation information time    : %f\n"
+           "    Sub-satellite point longitude  : %f\n"
+           "    Sub-satellite point latitude   : %f\n"
+           "    Earth center to satellite      : %f\n"
+           "    Nadir longitude                : %f\n"
+           "    Nadir latitude                 : %f\n"
+           "    Sun's Position (x,y,z)(J2000)  : %f, %f, %f\n"
+           "    Moon's Position (x,y,z)(J2000) : %f, %f, %f\n"
+           "    Spare length (bytes)           : %lu\n"
+           "\n",
+           nib->header_block_number,
+           nib->block_length,
+           nib->navigation_information_time,
+           nib->ssp_longitude,
+           nib->ssp_latitude,
+           nib->earth_center_to_satellite,
+           nib->nadir_longitude,
+           nib->nadir_latitude,
+           nib->sun_position_x,
+           nib->sun_position_y,
+           nib->sun_position_z,
+           nib->moon_position_x,
+           nib->moon_position_y,
+           nib->moon_position_z,
+           sizeof(uint8_t) * nib->spare_length);
+}
+
+
+
+void _print_calibration_information_block(CIB* cib)
+{
+    if(cib->band_number >= 7)
+    {
+        printf("Calibration Information Block:\n\n"
+               "    Block number                : %u\n"
+               "    Block length (bytes)        : %u\n"
+               "    band number                 : %u\n"
+               "    Central wave length         : %f\n"
+               "    Bits per pixel              : %u\n"
+               "    Error pixel value           : %u\n"
+               "    Outside scan pixel value    : %u\n"
+               "    Count to radiance slope     : %f\n"
+               "    Count to radiance intercept : %f\n"
+               "    IR radiance to BT c0        : %f\n"
+               "    IR radiance to BT c1        : %f\n"
+               "    IR radiance to BT c2        : %f\n"
+               "    IR BT to radiance c0        : %f\n"
+               "    IR BT to radiance c1        : %f\n"
+               "    IR BT to radiance c2        : %f\n"
+               "    Speed of light (c)          : %f\n"
+               "    Planck constant (h)         : %f\n"
+               "    Boltzmann constant (k)      : %f\n"
+               "    Spare length (bytes)        : %lu\n"
+               "\n",
+               cib->header_block_number,
+               cib->block_length,
+               cib->band_number,
+               cib->central_wave_length,
+               cib->bits_per_pixel,
+               cib->error_pixel_value,
+               cib->outside_scan_pixel_value,
+               cib->count_radiance_slope,
+               cib->count_radiance_intercept,
+               cib->ir_rad_to_bt_c0,
+               cib->ir_rad_to_bt_c1,
+               cib->ir_rad_to_bt_c2,
+               cib->ir_bt_to_rad_c0,
+               cib->ir_bt_to_rad_c1,
+               cib->ir_bt_to_rad_c2,
+               cib->ir_c,
+               cib->ir_h,
+               cib->ir_k,
+               sizeof(uint8_t) * cib->spare_length);
+    }
+    else
+    {
+        printf("Calibration Information Block:\n\n"
+               "    Block number                               : %u\n"
+               "    Block length (bytes)                       : %u\n"
+               "    band number                                : %u\n"
+               "    Central wave length                        : %f\n"
+               "    Bits per pixel                             : %u\n"
+               "    Error pixel value                          : %u\n"
+               "    Outside scan pixel value                   : %u\n"
+               "    Count to radiance slope                    : %f\n"
+               "    Count to radiance intercept                : %f\n"
+               "    VIS/IR c'                                  : %f\n"
+               "    VIS/IR calibration update time (mjd)       : %f\n"
+               "    VIS/IR updated count to radiance slope     : %f\n"
+               "    VIS/IR updated count to radiance intercept : %f\n"
+               "    Spare length (bytes)                       : %lu\n"
+               "\n",
+               cib->header_block_number,
+               cib->block_length,
+               cib->band_number,
+               cib->central_wave_length,
+               cib->bits_per_pixel,
+               cib->error_pixel_value,
+               cib->outside_scan_pixel_value,
+               cib->count_radiance_slope,
+               cib->count_radiance_intercept,
+               cib->vis_nir_c_prime,
+               cib->vis_nir_calib_update_time,
+               cib->vis_nir_count_radiance_slope,
+               cib->vis_nir_count_radiance_intercept,
+               sizeof(uint8_t) * cib->spare_length);
+    }
+}
+
+
+
+void _print_inter_calibration_information_block(IIB* iib)
+{
+    printf("Inter-calibration Information Block:\n\n"
+           "    Block number                                : %u\n"
+           "    Block length (bytes)                        : %u\n"
+           "    GSICS calibration intercept                 : %f\n"
+           "    GSICS calibration slope                     : %f\n"
+           "    GSICS calibration quadratic                 : %f\n"
+           "    Radiance bias (standard scene)              : %f\n"
+           "    Radiance bias uncertainty (standard scene)  : %f\n"
+           "    Radiance (standard scene)                   : %f\n"
+           "    GSICS calibration validity start time (mjd) : %f\n"
+           "    GSICS calibration validity end time   (mjd) : %f\n"
+           "    GSICS calibration validity upper limit      : %f\n"
+           "    GSICS calibration validity lower limit      : %f\n"
+           "    GSICS calibration correction filename       : %s\n"
+           "    Spare length (bytes)                        : %lu\n"
+           "\n",
+           iib->header_block_number,
+           iib->block_length,
+           iib->gsics_calibration_intercept,
+           iib->gsics_calibration_slope,
+           iib->gsics_calibration_quadratic,
+           iib->radiance_bias,
+           iib->radiance_bias_uncertainty,
+           iib->radiance,
+           iib->gsics_calibration_validity_start,
+           iib->gsics_calibration_validity_end,
+           iib->gsics_radiance_validity_upper_limit,
+           iib->gsics_radiance_validity_lower_limit,
+           iib->gsics_correction_filename,
+           sizeof(uint8_t) * iib->spare_length);
+}
+
+
+
+void _print_segment_information_block(SIB* sib)
+{
+    printf("Segment Information Block:\n\n"
+           "    Block number                 : %u\n"
+           "    Block length (bytes)         : %u\n"
+           "    Total segments               : %u\n"
+           "    Segment number               : %u\n"
+           "    First line number of segment : %u\n"
+           "    Spare length (bytes)         : %lu\n"
+           "\n",
+           sib->header_block_number,
+           sib->block_length,
+           sib->total_segments,
+           sib->segment_number,
+           sib->segment_first_line_number,
+           sizeof(uint8_t) * sib->spare_length);
+}
+
+
+
+void _print_navigation_correction_information_block(NCIB* ncib)
 {
     if(ncib->number_of_corrections > 0)
     {
@@ -2197,153 +2698,7 @@ void print_navigation_correction_information_block(NCIB* ncib)
 
 
 
-
-
-
-void deallocate_observation_time_information_block(OTIB* otib)
-{
-    if(otib->observation_time_line_number)
-        free(otib->observation_time_line_number);
-
-    if(otib->observation_time)
-        free(otib->observation_time);
-
-    if(otib->spare)
-        free(otib->spare);
-
-    free(otib);
-}
-
-
-
-void read_observation_time_information_block(FILE*    fp,
-                                             OTIB*    otib,
-                                             uint32_t header_offset)
-{
-    // Read the block number/id and block size
-    uint8_t  block_number = 0;
-    uint16_t block_length = 0;
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(&block_number,
-          sizeof(uint8_t),
-          1,
-          fp);
-    fread(&block_length,
-          sizeof(uint16_t),
-          1,
-          fp);
-
-    // Allocate a buffer
-    uint8_t* buffer = (uint8_t*)calloc(1,
-                                       block_length);
-
-    // Read in the whole block
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(buffer,
-          block_length,
-          1,
-          fp);
-
-    otib->header_block_number = block_number;
-    otib->block_length        = block_length;
-    
-    uint32_t buffer_offset = 3;
-
-    memcpy(&(otib->number_of_observation_times),
-           buffer + buffer_offset,
-           2);
-    buffer_offset += 2;
-
-    if(otib->number_of_observation_times > 0)
-    {
-        otib->observation_time_line_number = 
-            (uint16_t*)malloc(sizeof(uint16_t) * otib->number_of_observation_times);
-        otib->observation_time = 
-            (double*)malloc(sizeof(double) * otib->number_of_observation_times);
-
-        for(uint32_t i = 0; i < otib->number_of_observation_times; ++i)
-        {
-            memcpy(otib->observation_time_line_number + i,
-                   buffer + buffer_offset,
-                   2);
-            buffer_offset += 2;
-
-            memcpy(otib->observation_time + i,
-                   buffer + buffer_offset,
-                   8);
-            buffer_offset += 8;
-        }
-    }
-
-    otib->spare_length = otib->block_length - buffer_offset;
-    otib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * otib->spare_length);
-    memcpy(otib->spare,
-           buffer + buffer_offset,
-           sizeof(uint8_t) * otib->spare_length);
-
-    free(buffer);
-}
-
-
-
-void write_observation_time_information_block(FILE*    fp,
-                                              OTIB*    otib,
-                                              uint32_t header_offset)
-{
-    // Allocate a buffer to store data before writing to disk
-    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * otib->block_length);
-
-    uint32_t buffer_offset = 0;
-    memcpy(buffer + buffer_offset,
-           &(otib->header_block_number),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(otib->block_length),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           &(otib->number_of_observation_times),
-           2);
-    buffer_offset += 2;
-
-    for(uint32_t i = 0; i < otib->number_of_observation_times; ++i)
-    {
-        memcpy(buffer + buffer_offset,
-               otib->observation_time_line_number + i,
-               2);
-        buffer_offset += 2;
-
-        memcpy(buffer + buffer_offset,
-               otib->observation_time + i,
-               8);
-        buffer_offset += 8;
-    }
-
-    memcpy(buffer + buffer_offset,
-           otib->spare,
-           otib->spare_length);
-    buffer_offset += otib->spare_length;
-
-    fseek( fp,
-           header_offset,
-           SEEK_SET);
-    fwrite(buffer,
-           sizeof(uint8_t) * otib->block_length,
-           1,
-           fp);
-    free(buffer);
-}
-
-
-
-void print_observation_time_information_block(OTIB* otib)
+void _print_observation_time_information_block(OTIB* otib)
 {
     if(otib->number_of_observation_times > 0)
     {
@@ -2395,152 +2750,7 @@ void print_observation_time_information_block(OTIB* otib)
 
 
 
-
-
-
-void deallocate_error_information_block(EIB* eib)
-{
-    if(eib->error_line_number)
-        free(eib->error_line_number);
-
-    if(eib->error_pixels_for_line)
-        free(eib->error_pixels_for_line);
-
-    if(eib->spare)
-        free(eib->spare);
-
-    free(eib);
-}
-
-
-
-void read_error_information_block(FILE*    fp,
-                                  EIB*     eib,
-                                  uint32_t header_offset)
-{
-    // Read the block number/id and block size
-    uint8_t  block_number = 0;
-    uint32_t block_length = 0;
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(&block_number,
-          sizeof(uint8_t),
-          1,
-          fp);
-    fread(&block_length,
-          sizeof(uint32_t),
-          1,
-          fp);
-
-    // Allocate a buffer
-    uint8_t* buffer = (uint8_t*)calloc(1,
-                                       block_length);
-
-    // Read in the whole block
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(buffer,
-          block_length,
-          1,
-          fp);
-
-    eib->header_block_number = block_number;
-    eib->block_length        = block_length;
-
-    uint32_t buffer_offset = 5;
-    memcpy(&(eib->number_of_error_information_data),
-           buffer + buffer_offset,
-           2);
-    buffer_offset += 2;
-
-    if(eib->number_of_error_information_data > 0)
-    {
-        eib->error_line_number = 
-            (uint16_t*)malloc(sizeof(uint16_t) * eib->number_of_error_information_data);
-        eib->error_pixels_for_line = 
-            (uint16_t*)malloc(sizeof(uint16_t) * eib->number_of_error_information_data);
-
-        for(uint32_t i = 0; i < eib->number_of_error_information_data; ++i)
-        {
-            memcpy(eib->error_line_number + i,
-                   buffer + buffer_offset,
-                   2);
-            buffer_offset += 2;
-
-            memcpy(eib->error_pixels_for_line + i,
-                   buffer + buffer_offset,
-                   2);
-            buffer_offset += 2;
-        }
-    }
- 
-    eib->spare_length = eib->block_length - buffer_offset;
-    eib->spare        = (uint8_t*)malloc(sizeof(uint8_t) * eib->spare_length);
-    memcpy(eib->spare,
-           buffer + buffer_offset,
-           sizeof(uint8_t) * eib->spare_length);
-
-    free(buffer);
-}
-
-
-
-void write_error_information_block(FILE*    fp,
-                                   EIB*     eib,
-                                   uint32_t header_offset)
-{
-    // Allocate a buffer to store data before writing to disk
-    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * eib->block_length);
-
-    uint32_t buffer_offset = 0;
-    memcpy(buffer + buffer_offset,
-           &(eib->header_block_number),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(eib->block_length),
-           4);
-    buffer_offset += 4;
-
-    memcpy(buffer + buffer_offset,
-           &(eib->number_of_error_information_data),
-           2);
-    buffer_offset += 2;
-
-    for(uint32_t i = 0; i < eib->number_of_error_information_data; ++i)
-    {
-        memcpy(buffer + buffer_offset,
-               eib->error_line_number + i,
-               2);
-        buffer_offset += 2;
-
-        memcpy(buffer + buffer_offset,
-               eib->error_pixels_for_line + i,
-               2);
-        buffer_offset += 2;
-    }
-
-    memcpy(buffer + buffer_offset,
-           eib->spare,
-           eib->spare_length);
-    buffer_offset += eib->spare_length;
-
-    fseek( fp,
-           header_offset,
-           SEEK_SET);
-    fwrite(buffer,
-           sizeof(uint8_t) * eib->block_length,
-           1,
-           fp);
-    free(buffer);
-}
-
-
-
-void print_error_information_block(EIB* eib)
+void _print_error_information_block(EIB* eib)
 {
     if(eib->number_of_error_information_data > 0)
     {
@@ -2593,101 +2803,7 @@ void print_error_information_block(EIB* eib)
 
 
 
-
-
-
-void deallocate_spare_block(SB* sb)
-{
-    if(sb->spare)
-        free(sb->spare);
-    free(sb);
-}
-
-
-
-void read_spare_block(FILE*    fp,
-                      SB*      sb,
-                      uint32_t header_offset)
-{
-    // Read the block number/id and block size
-    uint8_t  block_number = 0;
-    uint16_t block_length = 0;
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(&block_number,
-          sizeof(uint8_t),
-          1,
-          fp);
-    fread(&block_length,
-          sizeof(uint16_t),
-          1,
-          fp);
-
-    // Allocate a buffer
-    uint8_t* buffer = (uint8_t*)calloc(1,
-                                       block_length);
-
-    // Read in the whole block
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(buffer,
-          block_length,
-          1,
-          fp);
-
-    sb->header_block_number = block_number;
-    sb->block_length        = block_length;
-
-    uint32_t buffer_offset = 3;
-    sb->spare_length       = sb->block_length - buffer_offset;
-    sb->spare              = (uint8_t*)malloc(sizeof(uint8_t) * sb->spare_length);
-    memcpy(sb->spare,
-           buffer + buffer_offset,
-           sizeof(uint8_t) * sb->spare_length);
-
-    free(buffer);
-}
-
-
-
-void write_spare_block(FILE*    fp,
-                       SB*      sb,
-                       uint32_t header_offset)
-{
-    // Allocate a buffer to store data before writing to disk
-    uint8_t* buffer = (uint8_t*)malloc(sizeof(uint8_t) * sb->block_length);
-
-    uint32_t buffer_offset = 0;
-    memcpy(buffer + buffer_offset,
-           &(sb->header_block_number),
-           1);
-    buffer_offset += 1;
-
-    memcpy(buffer + buffer_offset,
-           &(sb->block_length),
-           2);
-    buffer_offset += 2;
-
-    memcpy(buffer + buffer_offset,
-           sb->spare,
-           sb->spare_length);
-    buffer_offset += sb->spare_length;
-
-    fseek( fp,
-           header_offset,
-           SEEK_SET);
-    fwrite(buffer,
-           sizeof(uint8_t) * sb->block_length,
-           1,
-           fp);
-    free(buffer);
-}
-
-
-
-void print_spare_block(SB* sb)
+void _print_spare_block(SB* sb)
 {
     printf("Spare Block:\n\n"
            "    Block number         : %u\n"
@@ -2701,53 +2817,7 @@ void print_spare_block(SB* sb)
 
 
 
-
-
-
-void deallocate_data_block(DB* db)
-{
-    if(db->data)
-        free(db->data);
-    free(db);
-}
-
-
-
-void read_data_block(FILE*    fp,
-                     DB*      db,
-                     uint32_t header_offset,
-                     uint32_t length)
-{
-    db->data   = (uint16_t*)malloc(sizeof(uint16_t) * length);
-    db->length = length;
-
-    fseek(fp,
-          header_offset,
-          SEEK_SET);
-    fread(db->data,
-          sizeof(uint16_t) * db->length,
-          1,
-          fp);
-}
-
-
-
-void write_data_block(FILE*    fp,
-                      DB*      db,
-                      uint32_t header_offset)
-{
-    fseek( fp,
-           header_offset,
-           SEEK_SET);
-    fwrite(db->data,
-           sizeof(uint16_t) * db->length,
-           1,
-           fp);
-}
-
-
-
-void print_data_block(DB* db)
+void _print_data_block(DB* db)
 {
     printf("Data Block:\n\n"
            "    Block number         : 12\n"
@@ -2758,6 +2828,8 @@ void print_data_block(DB* db)
 
 
 
+// Public functions
+// ----------------------------------------
 
 
 
@@ -2779,67 +2851,67 @@ HSD* read_file(const char* filepath,
     HSD*     hsd = _allocate_hsd();
     uint32_t block_offset = 0;
 
-    read_basic_information_block(fp,
-                                 hsd->bib,
-                                 block_offset);
+    _read_basic_information_block(fp,
+                                  hsd->bib,
+                                  block_offset);
     block_offset += hsd->bib->block_length;
 
-    read_data_information_block(fp,
-                                hsd->dib,
-                                block_offset);
+    _read_data_information_block(fp,
+                                 hsd->dib,
+                                 block_offset);
     block_offset += hsd->dib->block_length;
 
-    read_projection_information_block(fp,
-                                      hsd->pib,
-                                      block_offset);
+    _read_projection_information_block(fp,
+                                       hsd->pib,
+                                       block_offset);
     block_offset += hsd->pib->block_length;
 
-    read_navigation_information_block(fp,
-                                      hsd->nib,
-                                      block_offset);
+    _read_navigation_information_block(fp,
+                                       hsd->nib,
+                                       block_offset);
     block_offset += hsd->nib->block_length;
 
-    read_calibration_information_block(fp,
-                                       hsd->cib,
-                                       block_offset);
+    _read_calibration_information_block(fp,
+                                        hsd->cib,
+                                        block_offset);
     block_offset += hsd->cib->block_length;
 
-    read_inter_calibration_information_block(fp,
-                                             hsd->iib,
-                                             block_offset);
+    _read_inter_calibration_information_block(fp,
+                                              hsd->iib,
+                                              block_offset);
     block_offset += hsd->iib->block_length;
     
-    read_segment_information_block(fp,
-                                   hsd->sib,
-                                   block_offset);
+    _read_segment_information_block(fp,
+                                    hsd->sib,
+                                    block_offset);
     block_offset += hsd->sib->block_length;
 
-    read_navigation_correction_information_block(fp,
-                                                 hsd->ncib,
-                                                 block_offset);
+    _read_navigation_correction_information_block(fp,
+                                                  hsd->ncib,
+                                                  block_offset);
     block_offset += hsd->ncib->block_length;
 
-    read_observation_time_information_block(fp,
-                                            hsd->otib,
-                                            block_offset);
+    _read_observation_time_information_block(fp,
+                                             hsd->otib,
+                                             block_offset);
     block_offset += hsd->otib->block_length;
     
-    read_error_information_block(fp,
-                                 hsd->eib,
-                                 block_offset);
+    _read_error_information_block(fp,
+                                  hsd->eib,
+                                  block_offset);
     block_offset += hsd->eib->block_length;
 
-    read_spare_block(fp,
-                     hsd->sb,
-                     block_offset);
+    _read_spare_block(fp,
+                      hsd->sb,
+                      block_offset);
     block_offset += hsd->sb->block_length;
 
     if(read_data)
     {
-        read_data_block(fp,
-                        hsd->db,
-                        block_offset,
-                        hsd->dib->number_of_columns * hsd->dib->number_of_rows);
+        _read_data_block(fp,
+                         hsd->db,
+                         block_offset,
+                         hsd->dib->number_of_columns * hsd->dib->number_of_rows);
     }
 
     fclose(fp);
@@ -2864,64 +2936,64 @@ void write_file(const char* filepath,
     }
 
     uint32_t header_offset = 0;
-    write_basic_information_block(fp,
-                                  hsd->bib,
-                                  header_offset);
+    _write_basic_information_block(fp,
+                                   hsd->bib,
+                                   header_offset);
     header_offset += hsd->bib->block_length;
 
-    write_data_information_block(fp,
-                                 hsd->dib,
-                                 header_offset);
+    _write_data_information_block(fp,
+                                  hsd->dib,
+                                  header_offset);
     header_offset += hsd->dib->block_length;
 
-    write_projection_information_block(fp,
-                                       hsd->pib,
-                                       header_offset);
+    _write_projection_information_block(fp,
+                                        hsd->pib,
+                                        header_offset);
     header_offset += hsd->pib->block_length;
 
-    write_navigation_information_block(fp,
-                                       hsd->nib,
-                                       header_offset);
+    _write_navigation_information_block(fp,
+                                        hsd->nib,
+                                        header_offset);
     header_offset += hsd->nib->block_length;
 
-    write_calibration_information_block(fp,
-                                        hsd->cib,
-                                        header_offset);
+    _write_calibration_information_block(fp,
+                                         hsd->cib,
+                                         header_offset);
     header_offset += hsd->cib->block_length;
 
-    write_inter_calibration_information_block(fp,
-                                              hsd->iib,
-                                              header_offset);
+    _write_inter_calibration_information_block(fp,
+                                               hsd->iib,
+                                               header_offset);
     header_offset += hsd->iib->block_length;
 
-    write_segment_information_block(fp,
-                                    hsd->sib,
-                                    header_offset);
+    _write_segment_information_block(fp,
+                                     hsd->sib,
+                                     header_offset);
     header_offset += hsd->sib->block_length;
 
-    write_navigation_correction_information_block(fp,
-                                                  hsd->ncib,
-                                                  header_offset);
+    _write_navigation_correction_information_block(fp,
+                                                   hsd->ncib,
+                                                   header_offset);
     header_offset += hsd->ncib->block_length;
 
-    write_observation_time_information_block(fp,
-                                             hsd->otib,
-                                             header_offset);
+    _write_observation_time_information_block(fp,
+                                              hsd->otib,
+                                              header_offset);
     header_offset += hsd->otib->block_length;
 
-    write_error_information_block(fp,
-                                  hsd->eib,
-                                  header_offset);
+    _write_error_information_block(fp,
+                                   hsd->eib,
+                                   header_offset);
     header_offset += hsd->eib->block_length;
 
-    write_spare_block(fp,
-                      hsd->sb,
-                      header_offset);
+    _write_spare_block(fp,
+                       hsd->sb,
+                       header_offset);
     header_offset += hsd->sb->block_length;
 
-    write_data_block(fp,
-                     hsd->db,
-                     header_offset);
+    _write_data_block(fp,
+                      hsd->db,
+                      header_offset);
 
     fclose(fp);
 }
@@ -2930,18 +3002,18 @@ void write_file(const char* filepath,
 
 void free_hsd(HSD* hsd)
 {
-    deallocate_basic_information_block(hsd->bib);
-    deallocate_data_information_block(hsd->dib);
-    deallocate_projection_information_block(hsd->pib);
-    deallocate_navigation_information_block(hsd->nib);
-    deallocate_calibration_information_block(hsd->cib);
-    deallocate_inter_calibration_information_block(hsd->iib);
-    deallocate_segment_information_block(hsd->sib);
-    deallocate_navigation_correction_information_block(hsd->ncib);
-    deallocate_observation_time_information_block(hsd->otib);
-    deallocate_error_information_block(hsd->eib);
-    deallocate_spare_block(hsd->sb);
-    deallocate_data_block(hsd->db);
+    _deallocate_basic_information_block(hsd->bib);
+    _deallocate_data_information_block(hsd->dib);
+    _deallocate_projection_information_block(hsd->pib);
+    _deallocate_navigation_information_block(hsd->nib);
+    _deallocate_calibration_information_block(hsd->cib);
+    _deallocate_inter_calibration_information_block(hsd->iib);
+    _deallocate_segment_information_block(hsd->sib);
+    _deallocate_navigation_correction_information_block(hsd->ncib);
+    _deallocate_observation_time_information_block(hsd->otib);
+    _deallocate_error_information_block(hsd->eib);
+    _deallocate_spare_block(hsd->sb);
+    _deallocate_data_block(hsd->db);
     free(hsd);
 }
 
@@ -3019,18 +3091,18 @@ int compare_files(const char* file_1,
 
 void print_header(HSD* hsd)
 {
-    print_basic_information_block(hsd->bib);
-    print_data_information_block(hsd->dib);
-    print_projection_information_block(hsd->pib);
-    print_navigation_information_block(hsd->nib);
-    print_calibration_information_block(hsd->cib);
-    print_inter_calibration_information_block(hsd->iib);
-    print_segment_information_block(hsd->sib);
-    print_navigation_correction_information_block(hsd->ncib);
-    print_observation_time_information_block(hsd->otib);
-    print_error_information_block(hsd->eib);
-    print_spare_block(hsd->sb);
-    print_data_block(hsd->db);
+    _print_basic_information_block(hsd->bib);
+    _print_data_information_block(hsd->dib);
+    _print_projection_information_block(hsd->pib);
+    _print_navigation_information_block(hsd->nib);
+    _print_calibration_information_block(hsd->cib);
+    _print_inter_calibration_information_block(hsd->iib);
+    _print_segment_information_block(hsd->sib);
+    _print_navigation_correction_information_block(hsd->ncib);
+    _print_observation_time_information_block(hsd->otib);
+    _print_error_information_block(hsd->eib);
+    _print_spare_block(hsd->sb);
+    _print_data_block(hsd->db);
 }
 
 
