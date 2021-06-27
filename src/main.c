@@ -6,7 +6,7 @@
 #include "himawari_io.h"
 
 
-// TODO: bzip2 support
+// TODO: write bz2 support?
 
 int main(int argc, char** argv)
 {
@@ -25,23 +25,34 @@ int main(int argc, char** argv)
                          true);
 
     // Print header information
-    print_header(hsd);
+    //print_header(hsd);
 
-    // Write file back out
+
+    // Get the path to the input and output files, without the bz2 extention
     const uint32_t buffer_length = 4096;
-    char*          buffer        = (char*)malloc(sizeof(char) * buffer_length);
-    snprintf(buffer,
+    char*          input_dir     = dirname(input_filepath); 
+    char*          inpath        = (char*)malloc(buffer_length);
+    char*          outpath       = (char*)malloc(buffer_length);
+    snprintf(inpath,
+             buffer_length,
+             "%s/%s",
+             input_dir,
+             hsd->bib->filename);
+    snprintf(outpath,
              buffer_length,
              "%s/%s",
              output_dir,
              hsd->bib->filename);
 
-    write_file(buffer,
+
+    // Write file back out
+    write_file(outpath,
                hsd);
     
-    int compare_result = compare_files(input_filepath,
-                                       buffer);
-                                       
+
+    // Compare the input and output files
+    int compare_result = compare_files(inpath,
+                                       outpath);
     if(compare_result != 0)
     {
         fprintf(stderr,
@@ -51,12 +62,12 @@ int main(int argc, char** argv)
                 compare_result);
     }
 
-    // Deallocate
+    // Free memory
+    free(inpath);
+    free(outpath);
     free_hsd(hsd);
-    free(buffer);
 
     return compare_result;
-    //return 0;
 }
 
 
