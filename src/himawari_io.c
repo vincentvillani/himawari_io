@@ -3054,8 +3054,8 @@ int compare_files(const char* file_1,
     {
         fprintf(stderr,
                 "Filesizes do not match\n"
-                "%s: %lld bytes\n"
-                "%s: %lld bytes\n",
+                "%s: %ld bytes\n"
+                "%s: %ld bytes\n",
                 file_1,
                 st_1.st_size,
                 file_2,

@@ -6,13 +6,6 @@
 #include "himawari_io.h"
 
 
-
-// TODO:
-// Test with each HSD version, both VIS/NIR and IR band
-// Read in HSD, then write out that HSD again. Should be byte to byte identical
-
-// TODO: Add arguments for reading header only
-// TODO: Check if HSD has already been used? Then do something?
 // TODO: bzip2 support
 
 int main(int argc, char** argv)
