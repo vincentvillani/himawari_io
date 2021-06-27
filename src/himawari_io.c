@@ -4,10 +4,14 @@
 #include <sys/stat.h>
 #include <sys/param.h>
 
+#include <bzlib.h>
 
 
 // Private function declariations
 // ----------------------------------------
+
+uint8_t* _decompress_bz2_file(FILE*     fp,
+                              uint64_t* decompress_size);
 
 HSD*  _allocate_hsd();
 BIB*  _allocate_basic_information_block();
@@ -128,6 +132,15 @@ void _print_data_block(DB* db);
 
 // Private function implementations
 // ----------------------------------------
+
+
+
+uint8_t* _decompress_bz2_file(FILE*     fp,
+                              uint64_t* decompress_size)
+{
+    
+}
+
 
 
 
@@ -2836,19 +2849,134 @@ void _print_data_block(DB* db)
 HSD* read_file(const char* filepath,
                bool        read_data)
 {
-    FILE* fp = fopen(filepath,
-                     "rb");
-    if(fp == NULL)
+    FILE*    fp                = NULL;
+    uint8_t* decompress_buffer = NULL;
+
+    // Is this a bz2 file?
+    size_t filepath_length = strlen(filepath);
+    char   filepath_ext[4];
+    memcpy(filepath_ext,
+           filepath + filepath_length - 3,
+           3);
+    filepath_ext[3] = '\0';
+
+    // If this is a bz2 file, decompress before use
+    bool is_bz2_file = strcmp(filepath_ext, "bz2") == 0;
+    if(is_bz2_file) 
     {
-        fprintf(stderr,
-                "%s:%d: Failed to open file %s\n",
-                __FILE__,
-                __LINE__,
-                filepath);
-        exit(1);
+        fp = fopen(filepath,
+                   "rb");
+        if(fp == NULL)
+        {
+            fprintf(stderr,
+                    "%s:%d: Failed to open file %s\n",
+                    __FILE__,
+                    __LINE__,
+                    filepath);
+            exit(1);
+        }
+
+        // Prepare bz2 file for reading
+        int bz2_error;
+        BZFILE* bz_fp = BZ2_bzReadOpen(&bz2_error,
+                                       fp,
+                                       0,
+                                       0,
+                                       NULL,
+                                       0);
+        if(bz2_error != BZ_OK)
+        {
+            fprintf(stderr,
+                    "%s:%d: BZ2_bzReadOpen returned error code %d\n",
+                    __FILE__,
+                    __LINE__,
+                    bz2_error);
+            exit(1);
+        }
+
+        // Read and decompress bz2 file
+        uint64_t bytes_read               = 0;
+        uint64_t decompress_buffer_length = 1000 * 1000 * 100;
+        decompress_buffer                 = (uint8_t*)malloc(decompress_buffer_length);
+        while(bz2_error == BZ_OK)
+        {
+            const int current_bytes_read = BZ2_bzRead(&bz2_error,
+                                                      bz_fp,
+                                                      decompress_buffer + bytes_read,
+                                                      decompress_buffer_length - bytes_read);
+            bytes_read += current_bytes_read;
+
+            // Grow the decompress_buffer if required
+            if(bytes_read == decompress_buffer_length)
+            {
+                uint8_t* grow_buffer = (uint8_t*)malloc(decompress_buffer_length + decompress_buffer_length);
+                memcpy(grow_buffer,
+                       decompress_buffer,
+                       decompress_buffer_length);
+                free(decompress_buffer);
+                decompress_buffer = grow_buffer;
+                decompress_buffer_length += decompress_buffer_length;
+            }
+        }
+
+        if(bz2_error != BZ_STREAM_END)
+        {
+            fprintf(stderr,
+                    "%s:%d: BZ2_bzRead returned error code %d\n",
+                    __FILE__,
+                    __LINE__,
+                    bz2_error);
+            exit(1);
+        }
+
+        printf("Decompressed bytes: %llu\n",
+               bytes_read);
+
+        BZ2_bzReadClose(&bz2_error,
+                        bz_fp);
+        if(bz2_error != BZ_OK)
+        {
+            fprintf(stderr,
+                    "%s:%d: bzReadClose returned error code %d\n",
+                    __FILE__,
+                    __LINE__,
+                    bz2_error);
+            exit(1);
+        }
+        // Close the file pointer to the bz2 file
+        fclose(fp);
+
+        // Pretend the decompressed bz2 data is a file, so we have one set of function calls
+        // that operate on FILE*
+        fp = fmemopen(decompress_buffer,
+                      decompress_buffer_length,
+                      "rb");
+        if(fp == NULL)
+        {
+            fprintf(stderr,
+                    "%s:%d: fmemopen returned NULL\n",
+                    __FILE__,
+                    __LINE__);
+            exit(1);
+        }
+    }
+    else
+    {
+        fp = fopen(filepath,
+                   "rb");
+        if(fp == NULL)
+        {
+            fprintf(stderr,
+                    "%s:%d: Failed to open file %s\n",
+                    __FILE__,
+                    __LINE__,
+                    filepath);
+            exit(1);
+        }
     }
 
-    HSD*     hsd = _allocate_hsd();
+
+    HSD*     hsd          = _allocate_hsd();
     uint32_t block_offset = 0;
 
     _read_basic_information_block(fp,
@@ -2915,6 +3043,9 @@ HSD* read_file(const char* filepath,
     }
 
     fclose(fp);
+    if(is_bz2_file)
+        free(decompress_buffer);
+
     return hsd;
 }
 

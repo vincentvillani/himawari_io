@@ -15,7 +15,7 @@ himawari_io_obj=$(himawari_io_src_c:.c=.o)
 # ------------------------------------------------------
 
 CC=gcc
-LIBS=-lm -lpthread
+LIBS=-lm -lpthread -lbz2
 C_FLAGS=-m64 -Wall -std=c11
 DEBUG_FLAGS=-g3 -O0
 RELEASE_FLAGS=-O3

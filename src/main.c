@@ -19,14 +19,13 @@ int main(int argc, char** argv)
 
     char* input_filepath = argv[1];
     char* output_dir     = argv[2];
-    char* input_file     = basename(input_filepath);
 
     // Read file
     HSD* hsd = read_file(input_filepath,
                          true);
 
     // Print header information
-    //print_header(hsd);
+    print_header(hsd);
 
     // Write file back out
     const uint32_t buffer_length = 4096;
@@ -35,12 +34,11 @@ int main(int argc, char** argv)
              buffer_length,
              "%s/%s",
              output_dir,
-             input_file);
+             hsd->bib->filename);
 
     write_file(buffer,
                hsd);
     
-
     int compare_result = compare_files(input_filepath,
                                        buffer);
                                        
@@ -58,6 +56,7 @@ int main(int argc, char** argv)
     free(buffer);
 
     return compare_result;
+    //return 0;
 }
 
 
