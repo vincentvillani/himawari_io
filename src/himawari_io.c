@@ -1,5 +1,6 @@
 #include "himawari_io.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/param.h>
