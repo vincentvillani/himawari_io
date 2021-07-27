@@ -21,11 +21,19 @@ int main(int argc, char** argv)
     char* output_dir     = argv[2];
 
     // Read file
-    HSD* hsd = read_file(input_filepath,
-                         true);
+    HSD* hsd = himawari_io_read_file(input_filepath,
+                                     true);
+    if(hsd == NULL)
+    {
+        fprintf(stderr,
+                "%s:%d: himawari_io_read_file returned NULL\n",
+                __FILE__,
+                __LINE__);
+        exit(1);
+    }
 
     // Print header information
-    //print_header(hsd);
+    //himawari_io_print_header(hsd);
 
 
     // Get the path to the input and output files, without the bz2 extention
@@ -46,13 +54,13 @@ int main(int argc, char** argv)
 
 
     // Write file back out
-    write_file(outpath,
-               hsd);
+    himawari_io_write_file(outpath,
+                           hsd);
     
 
     // Compare the input and output files
-    int compare_result = compare_files(inpath,
-                                       outpath);
+    int compare_result = himawari_io_compare_files(inpath,
+                                                   outpath);
     if(compare_result != 0)
     {
         fprintf(stderr,
@@ -65,7 +73,7 @@ int main(int argc, char** argv)
     // Free memory
     free(inpath);
     free(outpath);
-    free_hsd(hsd);
+    himawari_io_free_hsd(hsd);
 
     return compare_result;
 }

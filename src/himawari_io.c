@@ -2913,8 +2913,8 @@ void _print_data_block(DB* db)
 
 
 
-HSD* read_file(const char* filepath,
-               bool        read_data)
+HSD* himawari_io_read_file(const char* filepath,
+                           bool        read_data)
 {
     FILE*    fp                = NULL;
     uint8_t* decompress_buffer = NULL;
@@ -2936,12 +2936,15 @@ HSD* read_file(const char* filepath,
                    "rb");
         if(fp == NULL)
         {
+            return NULL;
+            /*
             fprintf(stderr,
                     "%s:%d: Failed to open file %s\n",
                     __FILE__,
                     __LINE__,
                     filepath);
             exit(1);
+            */
         }
 
         uint64_t decompress_buffer_length;
@@ -2958,11 +2961,14 @@ HSD* read_file(const char* filepath,
                       "rb");
         if(fp == NULL)
         {
+            return NULL;
+            /*
             fprintf(stderr,
                     "%s:%d: fmemopen returned NULL\n",
                     __FILE__,
                     __LINE__);
             exit(1);
+            */
         }
     }
     else
@@ -2971,12 +2977,15 @@ HSD* read_file(const char* filepath,
                    "rb");
         if(fp == NULL)
         {
+            return NULL;
+            /*
             fprintf(stderr,
                     "%s:%d: Failed to open file %s\n",
                     __FILE__,
                     __LINE__,
                     filepath);
             exit(1);
+            */
         }
     }
 
@@ -3056,8 +3065,8 @@ HSD* read_file(const char* filepath,
 
 
 
-void write_file(const char* filepath,
-                HSD*        hsd)
+void himawari_io_write_file(const char* filepath,
+                            HSD*        hsd)
 {
     FILE* fp = fopen(filepath,
                      "wb");
@@ -3136,7 +3145,7 @@ void write_file(const char* filepath,
 
 
 
-void free_hsd(HSD* hsd)
+void himawari_io_free_hsd(HSD* hsd)
 {
     _deallocate_basic_information_block(hsd->bib);
     _deallocate_data_information_block(hsd->dib);
@@ -3155,8 +3164,8 @@ void free_hsd(HSD* hsd)
 
 
 
-int compare_files(const char* file_1,
-                  const char* file_2)
+int himawari_io_compare_files(const char* file_1,
+                              const char* file_2)
 {
     FILE* fp_1 = fopen(file_1,
                        "rb");
@@ -3225,7 +3234,7 @@ int compare_files(const char* file_1,
 
 
 
-void print_header(HSD* hsd)
+void himawari_io_print_header(HSD* hsd)
 {
     _print_basic_information_block(hsd->bib);
     _print_data_information_block(hsd->dib);

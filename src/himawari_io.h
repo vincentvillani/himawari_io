@@ -1,6 +1,7 @@
 #ifndef HIMAWARI_IO_H 
 #define HIMAWARI_IO_H 
 
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -262,14 +263,14 @@ typedef struct HSD
 
 
 
-HSD* read_file(const char* filepath,
-               bool        read_data);
-void write_file(const char* filepath,
-                HSD*        hsd);
-void free_hsd(HSD* hsd);
-int  compare_files(const char* file_1,
-                   const char* file_2);
-void print_header(HSD* hsd);
+HSD* himawari_io_read_file(const char* filepath,
+                           bool        read_data);
+void himawari_io_write_file(const char* filepath,
+                            HSD*        hsd);
+void himawari_io_free_hsd(HSD* hsd);
+int  himawari_io_compare_files(const char* file_1,
+                               const char* file_2);
+void himawari_io_print_header(HSD* hsd);
 
 
 
