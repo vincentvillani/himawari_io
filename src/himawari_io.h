@@ -1,6 +1,10 @@
 #ifndef HIMAWARI_IO_H 
 #define HIMAWARI_IO_H 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif
@@ -275,5 +279,8 @@ int  himawari_io_compare_files(const char* file_1,
 void himawari_io_print_header(HSD* hsd);
 
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
