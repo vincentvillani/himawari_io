@@ -1,7 +1,9 @@
 #ifndef HIMAWARI_IO_H 
 #define HIMAWARI_IO_H 
 
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
