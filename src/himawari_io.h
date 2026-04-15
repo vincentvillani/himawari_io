@@ -136,7 +136,7 @@ typedef struct CIB
     double    ir_c;                             // Speed of light (m/s)
     double    ir_h;                             // Planck constant (Js)
     double    ir_k;                             // Boltzmann constant (J/K)
-    double    vis_nir_c_prime;
+    double    vis_nir_c_prime;                  // Radiance to "albedo" coefficient, aka scaled radiance
     double    vis_nir_calib_update_time;        // Update time of the following two 
                                                 // calibration values (mjd)
     double    vis_nir_count_radiance_slope;
@@ -150,8 +150,8 @@ typedef struct CIB
 // Inter-calibration Information Block
 typedef struct IIB
 {
-    uint8_t   header_block_number;      // 6 (fixed value)
-    uint16_t  block_length;             // 259 bytes (fixed value)
+    uint8_t   header_block_number;              // 6 (fixed value)
+    uint16_t  block_length;                     // 259 bytes (fixed value)
     double    gsics_calibration_intercept;
     double    gsics_calibration_slope;
     double    gsics_calibration_quadratic;
