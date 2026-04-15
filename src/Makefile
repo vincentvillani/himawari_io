@@ -14,6 +14,7 @@ himawari_io_obj=$(himawari_io_src_c:.c=.o)
 # Flags
 # ------------------------------------------------------
 
+PYTHON=python3
 CC=gcc
 LIBS=-lm -lpthread -lbz2
 C_FLAGS=-m64 -Wall -std=c11 -fPIC
@@ -50,25 +51,31 @@ endif
 	    $(CC) $(COMPILE_FLAGS) -c $< -o $@
 
 
+.PHONY: clean
+clean:
+	rm -f $(himawari_io_obj)       \
+		  *.o                      \
+          hio.c                    \
+		  ../bin/himawari_io       \
+	      ../bin/*.so
+
+
 # Creates the shared library from the .o files
 himawari_io_so: $(himawari_io_obj)
 	$(CC) -shared -o ../bin/libhimawari_io.so $(himawari_io_obj) $(LIBS)
 
 
 # Creates a test binary, linking in the .so file
-himawari_io: himawari_io_so
+himawari_io: clean himawari_io_so
 	$(CC) -o ../bin/himawari_io main.c $(COMPILE_FLAGS) -L../bin/ -lhimawari_io
 
+pybindings: clean himawari_io_so
+	$(PYTHON) pybindings_build.py
+	mv *.so ../bin/
 
-release: himawari_io
-debug: himawari_io
 
+release: himawari_io pybindings
+debug: himawari_io pybindings
 
-.PHONY: clean
-clean:
-	rm -f $(himawari_io_obj)       \
-		  main.o                   \
-		  ../bin/himawari_io       \
-	      ../bin/libhimawari_io.so
 
 
